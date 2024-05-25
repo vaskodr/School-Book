@@ -1,9 +1,9 @@
 package com.nbu.schoolbook.class_session;
 
 import com.nbu.schoolbook.subject.SubjectEntity;
-import com.nbu.schoolbook.models.enums.DayOfWeek;
+import com.nbu.schoolbook.enums.DayOfWeek;
 import com.nbu.schoolbook.program.ProgramEntity;
-import com.nbu.schoolbook.teacher.TeacherEntity;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

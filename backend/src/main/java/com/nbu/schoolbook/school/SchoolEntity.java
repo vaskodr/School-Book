@@ -1,8 +1,8 @@
 package com.nbu.schoolbook.school;
 
 import com.nbu.schoolbook.class_entity.ClassEntity;
-import com.nbu.schoolbook.director.DirectorEntity;
-import com.nbu.schoolbook.teacher.TeacherEntity;
+import com.nbu.schoolbook.user.director.DirectorEntity;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

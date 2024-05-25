@@ -1,8 +1,12 @@
 package com.nbu.schoolbook.subject;
 
-import com.nbu.schoolbook.models.enums.ClassLevel;
+import com.nbu.schoolbook.enums.ClassLevel;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "subject")
@@ -17,7 +21,7 @@ public class SubjectEntity {
     private long id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
-    private ClassLevel level;
 
+    @ManyToMany(mappedBy = "subjects")
+    private Set<TeacherEntity> teachers = new HashSet<>();
 }

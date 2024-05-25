@@ -1,7 +1,7 @@
 package com.nbu.schoolbook.grade;
 
 import com.nbu.schoolbook.class_session.ClassSessionEntity;
-import com.nbu.schoolbook.student.StudentEntity;
+import com.nbu.schoolbook.user.student.StudentEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

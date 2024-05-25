@@ -1,8 +1,8 @@
 package com.nbu.schoolbook.class_entity;
 
 import com.nbu.schoolbook.school.SchoolEntity;
-import com.nbu.schoolbook.models.enums.ClassLevel;
-import com.nbu.schoolbook.teacher.TeacherEntity;
+import com.nbu.schoolbook.enums.ClassLevel;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,9 +1,13 @@
 package com.nbu.schoolbook.role;
 
+import com.nbu.schoolbook.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.catalina.User;
 
 import javax.management.relation.Role;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "role")
@@ -19,4 +23,6 @@ public class RoleEntity {
     @Column(nullable = false)
     private String name;
 
+    @OneToMany(mappedBy = "role")
+    private Set<UserEntity> users;
 }

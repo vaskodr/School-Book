@@ -1,14 +1,11 @@
 package com.nbu.schoolbook.user;
 
-import com.nbu.schoolbook.models.enums.Gender;
+import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.role.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
 
 @Entity
 @Table(name = "user")
@@ -16,7 +13,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
-public class UserEntity implements UserDetails {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,38 +29,10 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String phone;
     private String email;
+    private String username;
     private String password;
 
-    @OneToOne
+    @ManyToOne
     private RoleEntity role;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 }
