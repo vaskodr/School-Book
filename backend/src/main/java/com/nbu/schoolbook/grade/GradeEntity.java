@@ -30,4 +30,6 @@ public class GradeEntity {
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     private StudentEntity student;
+
+
 }
