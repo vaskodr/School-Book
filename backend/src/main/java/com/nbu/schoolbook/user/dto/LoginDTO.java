@@ -1,4 +1,4 @@
-package com.nbu.schoolbook.user;
+package com.nbu.schoolbook.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

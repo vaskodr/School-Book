@@ -1,10 +1,10 @@
-package com.nbu.schoolbook.controller.auth;
+package com.nbu.schoolbook.auth;
 
 import com.nbu.schoolbook.exception.APIException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
-import com.nbu.schoolbook.user.LoginDTO;
-import com.nbu.schoolbook.user.RegisterDTO;
+import com.nbu.schoolbook.user.dto.LoginDTO;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.UserEntity;
 import com.nbu.schoolbook.user.director.DirectorEntity;
 import com.nbu.schoolbook.user.parent.ParentEntity;

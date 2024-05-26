@@ -35,14 +35,4 @@ public class SchoolEntity {
     @OneToMany(mappedBy = "school")
     private Set<TeacherEntity> teachers;
 
-    public SchoolEntity(String name, String address) {
-        this.name = name;
-        this.address = address;
-    }
-
-    public SchoolEntity(Long id, String name, String address) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-    }
 }

@@ -1,9 +1,12 @@
 package com.nbu.schoolbook.user;
 
+import com.nbu.schoolbook.user.dto.RegisterDTO;
+import com.nbu.schoolbook.user.dto.UserDTO;
+
 import java.util.List;
 
 public interface UserService {
-    UserDTO createUser(UserDTO userDTO);
+    RegisterDTO createUser(RegisterDTO registerDTO);
     UserDTO getUserById(Long id);
     List<UserDTO> getAllUsers();
     UserDTO updateUser(Long id, UserDTO userDTO);

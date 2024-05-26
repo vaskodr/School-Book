@@ -1,7 +1,7 @@
 package com.nbu.schoolbook.user;
 
-import com.nbu.schoolbook.user.UserDTO;
-import com.nbu.schoolbook.user.UserEntity;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
+import com.nbu.schoolbook.user.dto.UserDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +22,15 @@ public class UserMapper {
     public UserEntity mapToEntity(UserDTO userDTO) {
         return modelMapper.map(userDTO, UserEntity.class);
     }
+
+    public RegisterDTO mapToRegisterDTO(UserEntity user) {
+        return modelMapper.map(user, RegisterDTO.class);
+    }
+
+    public UserEntity mapRegisterDTOToEntity(RegisterDTO registerDTO) {
+        return modelMapper.map(registerDTO, UserEntity.class);
+    }
+
 
 
 }

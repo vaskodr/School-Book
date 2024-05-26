@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.school;
 
+import com.nbu.schoolbook.school.dto.SchoolDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

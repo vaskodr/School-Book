@@ -1,8 +1,8 @@
-package com.nbu.schoolbook.controller.auth;
+package com.nbu.schoolbook.auth;
 
 import com.nbu.schoolbook.exception.APIException;
-import com.nbu.schoolbook.user.LoginDTO;
-import com.nbu.schoolbook.user.RegisterDTO;
+import com.nbu.schoolbook.user.dto.LoginDTO;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 
 public interface AuthService {
     String login(LoginDTO loginDTO);

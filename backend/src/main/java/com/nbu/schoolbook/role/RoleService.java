@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.role;
 
-import javax.management.relation.Role;
+import com.nbu.schoolbook.role.dto.RoleDTO;
+
 import java.util.List;
 
 public interface RoleService {

@@ -1,4 +1,4 @@
-package com.nbu.schoolbook.role;
+package com.nbu.schoolbook.role.dto;
 
 import lombok.*;
 

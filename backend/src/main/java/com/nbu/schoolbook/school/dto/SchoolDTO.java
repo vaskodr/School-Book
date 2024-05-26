@@ -1,4 +1,4 @@
-package com.nbu.schoolbook.school;
+package com.nbu.schoolbook.school.dto;
 
 import com.nbu.schoolbook.class_entity.ClassDTO;
 import com.nbu.schoolbook.user.teacher.TeacherDTO;

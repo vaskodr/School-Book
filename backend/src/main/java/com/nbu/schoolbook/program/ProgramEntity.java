@@ -22,6 +22,7 @@ public class ProgramEntity {
     @OneToOne
     @JoinColumn(nullable = false)
     private ClassEntity associatedClass;
+
     @OneToMany(mappedBy = "program")
     private Set<ClassSessionEntity> classSessions;
 

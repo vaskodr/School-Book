@@ -26,5 +26,5 @@ public class TeacherEntity extends UserEntity {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
-    private Set<SubjectEntity> subjects = new HashSet<>();
+    private Set<SubjectEntity> subjects;
 }

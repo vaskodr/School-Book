@@ -1,9 +1,9 @@
-package com.nbu.schoolbook.controller;
+package com.nbu.schoolbook.auth.controller;
 
 import com.nbu.schoolbook.exception.APIException;
-import com.nbu.schoolbook.controller.auth.AuthService;
-import com.nbu.schoolbook.user.LoginDTO;
-import com.nbu.schoolbook.user.RegisterDTO;
+import com.nbu.schoolbook.auth.AuthService;
+import com.nbu.schoolbook.user.dto.LoginDTO;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

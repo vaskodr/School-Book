@@ -30,9 +30,6 @@ public class ClassSessionEntity {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @Column(nullable = false)
-    private DayOfWeek dayOfWeek;
-
     @OneToOne
     @JoinColumn(nullable = false)
     private TeacherEntity teacher;

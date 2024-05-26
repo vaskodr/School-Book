@@ -3,6 +3,8 @@ package com.nbu.schoolbook.user;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
+import com.nbu.schoolbook.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,17 +19,17 @@ public class UserServiceImpl implements UserService{
     private final RoleRepository roleRepository;
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        UserEntity user = userMapper.mapToEntity(userDTO);
-        RoleEntity role = roleRepository.findById(userDTO.roleId())
+    public RegisterDTO createUser(RegisterDTO registerDTO) {
+        UserEntity user = userMapper.mapRegisterDTOToEntity(registerDTO);
+        RoleEntity role = roleRepository.findByName("ROLE_" + registerDTO.getType())
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
-                                "Role does not exists with id: " + userDTO.roleId()
+                                "Role does not exists with name: " + registerDTO.getType()
                         )
                 );
         user.setRole(role);
         UserEntity savedUser = userRepository.save(user);
-        return userMapper.mapToDTO(savedUser);
+        return userMapper.mapToRegisterDTO(savedUser);
     }
 
     @Override
