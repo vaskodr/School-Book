@@ -1,4 +1,4 @@
-package com.nbu.schoolbook.school.dto;
+package com.nbu.schoolbook.subject.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SchoolDTO {
+public class SubjectDTO {
     private String name;
-    private String address;
-    private Long directorId;
-    private List<Long> classIds;
     private List<Long> teacherIds;
 }

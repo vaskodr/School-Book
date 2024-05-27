@@ -2,6 +2,7 @@ package com.nbu.schoolbook.school;
 
 import com.nbu.schoolbook.class_entity.ClassEntity;
 import com.nbu.schoolbook.user.director.DirectorEntity;
+import com.nbu.schoolbook.user.student.StudentEntity;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,10 +30,11 @@ public class SchoolEntity {
     @OneToOne(mappedBy = "school")
     private DirectorEntity director;
 
-    @OneToMany(mappedBy = "school")
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ClassEntity> classes;
 
     @OneToMany(mappedBy = "school")
     private Set<TeacherEntity> teachers;
+
 
 }

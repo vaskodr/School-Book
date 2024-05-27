@@ -3,6 +3,7 @@ package com.nbu.schoolbook.user.student;
 import com.nbu.schoolbook.absence.AbsenceEntity;
 import com.nbu.schoolbook.class_entity.ClassEntity;
 import com.nbu.schoolbook.grade.GradeEntity;
+import com.nbu.schoolbook.school.SchoolEntity;
 import com.nbu.schoolbook.user.parent.ParentEntity;
 import com.nbu.schoolbook.user.UserEntity;
 import jakarta.persistence.*;
@@ -33,7 +34,7 @@ public final class StudentEntity extends UserEntity {
     )
     private Set<ParentEntity> parents;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private ClassEntity studentClass;
 

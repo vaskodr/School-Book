@@ -2,9 +2,12 @@ package com.nbu.schoolbook.class_entity;
 
 import com.nbu.schoolbook.school.SchoolEntity;
 import com.nbu.schoolbook.enums.ClassLevel;
+import com.nbu.schoolbook.user.student.StudentEntity;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "class")
@@ -25,9 +28,12 @@ public class ClassEntity {
     @Enumerated(EnumType.STRING)
     private ClassLevel level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id", referencedColumnName = "id", nullable = false)
     private SchoolEntity school;
+
+    @OneToMany(mappedBy = "studentClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<StudentEntity> students;
 
     @OneToOne
     @JoinColumn(name = "mentor", nullable = false)

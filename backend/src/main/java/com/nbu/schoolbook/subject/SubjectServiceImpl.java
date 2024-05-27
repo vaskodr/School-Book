@@ -1,50 +1,91 @@
 package com.nbu.schoolbook.subject;
 
+import com.nbu.schoolbook.exception.ResourceNotFoundException;
+import com.nbu.schoolbook.role.RoleEntity;
+import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
+import com.nbu.schoolbook.subject.dto.SubjectDTO;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
+import com.nbu.schoolbook.user.teacher.TeacherRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+@AllArgsConstructor
 @Service
 public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final SubjectMapper subjectMapper;
+    private final TeacherRepository teacherRepository;
 
-    @Autowired
-    public SubjectServiceImpl(SubjectRepository subjectRepository) {
-        this.subjectRepository = subjectRepository;
+    @Override
+    public CreateSubjectDTO saveSubject(CreateSubjectDTO createSubjectDTO) {
+        SubjectEntity subject = subjectMapper.mapCreateDTOToEntity(createSubjectDTO);
+        subject = subjectRepository.save(subject);
+        return subjectMapper.mapEntityToCreateDTO(subject);
+
     }
 
     @Override
-    public SubjectEntity saveSubject(SubjectEntity subject) {
-        return subjectRepository.save(subject);
+    public SubjectDTO getSubjectById(Long id) {
+        SubjectEntity subject = subjectRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Subject does not exists with id: " + id
+                        )
+                );
+        return subjectMapper.mapEntityToDTO(subject);
     }
 
     @Override
-    public SubjectEntity updateSubject(long id, SubjectEntity subject) {
-        Optional<SubjectEntity> existingSubject = subjectRepository.findById(id);
-        if (existingSubject.isPresent()) {
-            SubjectEntity updatedSubject = existingSubject.get();
-            updatedSubject.setName(subject.getName());
-            return subjectRepository.save(updatedSubject);
-        } else {
-            throw new RuntimeException("Subject not found with id: " + id);
+    public List<SubjectDTO> getAllSubjects() {
+         List<SubjectEntity> subjects = subjectRepository.findAll();
+         return subjects.stream()
+                 .map(subjectMapper::mapEntityToDTO)
+                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public SubjectDTO updateSubject(Long id, SubjectDTO subjectDTO) {
+        SubjectEntity subject = subjectRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Subject does not exists with id: " + id
+                        )
+                );
+        if (subjectDTO.getName() != null) {
+            subject.setName(subject.getName());
         }
+
+        if (subjectDTO.getTeacherIds() != null) {
+            Set<TeacherEntity> teachers = new HashSet<>(
+                    teacherRepository.findAllById(subjectDTO.getTeacherIds())
+            );
+            subject.setTeachers(teachers);
+        }
+
+        SubjectEntity updatedSubject = subjectRepository.save(subject);
+        return subjectMapper.mapEntityToDTO(updatedSubject);
+
     }
 
     @Override
-    public void deleteSubject(long id) {
+    public void deleteSubject(Long id) {
+        SubjectEntity subject = subjectRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Subject does not exist with id: " + id
+                        )
+                );
         subjectRepository.deleteById(id);
     }
 
-    @Override
-    public SubjectEntity getSubjectById(long id) {
-        return subjectRepository.findById(id).orElseThrow(() -> new RuntimeException("Subject not found with id: " + id));
-    }
 
-    @Override
-    public List<SubjectEntity> getAllSubjects() {
-        return subjectRepository.findAll();
-    }
 }

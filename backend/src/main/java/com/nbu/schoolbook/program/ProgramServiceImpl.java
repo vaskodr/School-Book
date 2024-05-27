@@ -26,7 +26,7 @@ public class ProgramServiceImpl implements ProgramService {
         Optional<ProgramEntity> existingProgram = programRepository.findById(id);
         if (existingProgram.isPresent()) {
             ProgramEntity updatedProgram = existingProgram.get();
-            updatedProgram.setSa(program.getAssociatedClass());
+            updatedProgram.setAssociatedClass(program.getAssociatedClass());
             updatedProgram.setClassSessions(program.getClassSessions());
             return programRepository.save(updatedProgram);
         } else {
