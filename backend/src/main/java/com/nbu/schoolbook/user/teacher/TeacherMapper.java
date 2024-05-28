@@ -1,11 +1,16 @@
 package com.nbu.schoolbook.user.teacher;
 
+import com.nbu.schoolbook.subject.SubjectEntity;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.Mapping;
+
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -13,24 +18,43 @@ public class TeacherMapper {
     private final ModelMapper modelMapper;
 
     public TeacherDTO mapEntityToDTO(TeacherEntity teacher) {
-        return modelMapper.map(teacher, TeacherDTO.class);
+        TeacherDTO teacherDTO = modelMapper.map(teacher, TeacherDTO.class);
+        if (teacher.getSubjects() != null) {
+            teacherDTO.setSubjectIds(teacher.getSubjects().stream()
+                    .map(SubjectEntity::getId)
+                    .collect(Collectors.toList()));
+        }
+        return teacherDTO;
     }
+
     public TeacherEntity mapDTOToEntity(TeacherDTO teacherDTO) {
         return modelMapper.map(teacherDTO, TeacherEntity.class);
     }
+
     public CreateTeacherDTO mapEntityToCreateDTO(TeacherEntity teacher) {
         return modelMapper.map(teacher, CreateTeacherDTO.class);
     }
+
     public TeacherEntity mapCreateDTOToEntity(CreateTeacherDTO createTeacherDTO) {
         return modelMapper.map(createTeacherDTO, TeacherEntity.class);
     }
+
     public UpdateTeacherDTO mapEntityToUpdateDTO(TeacherEntity teacher) {
         return modelMapper.map(teacher, UpdateTeacherDTO.class);
     }
+
     public TeacherEntity mapUpdateDTOToEntity(UpdateTeacherDTO updateTeacherDTO) {
         return modelMapper.map(updateTeacherDTO, TeacherEntity.class);
     }
-    public TeacherDTO mapUpdateDTOToDTO(UpdateTeacherDTO updateTeacherDTO) {
-        return modelMapper.map(updateTeacherDTO, TeacherDTO.class);
+
+    public TeacherEntity mapRegisterDTOToEntity(RegisterDTO registerDTO) {
+        return modelMapper.map(registerDTO, TeacherEntity.class);
+    }
+
+    public RegisterDTO mapCreateDTOToRegisterDTO(CreateTeacherDTO createTeacherDTO) {
+        return modelMapper.map(createTeacherDTO, RegisterDTO.class);
+    }
+    public CreateTeacherDTO mapRegisterDTOToCreateDTO(RegisterDTO registerDTO) {
+        return modelMapper.map(registerDTO, CreateTeacherDTO.class);
     }
 }

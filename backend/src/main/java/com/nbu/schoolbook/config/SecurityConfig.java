@@ -42,6 +42,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                 (authorize) -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // Permit all GET requests under /api
+                        .requestMatchers("/api/subject/**").permitAll()
+                        .requestMatchers("/api/school/**").permitAll()
+                        .requestMatchers("/api/teacher/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll() // Permit access to login and register endpoints
                         .anyRequest().authenticated()
 //                        authorize.anyRequest().authenticated()

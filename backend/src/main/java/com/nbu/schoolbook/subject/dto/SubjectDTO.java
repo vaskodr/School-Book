@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubjectDTO {
+    private Long id;
     private String name;
     private List<Long> teacherIds;
 }

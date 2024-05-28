@@ -22,5 +22,5 @@ public class SubjectEntity {
     private String name;
 
     @ManyToMany(mappedBy = "subjects")
-    private Set<TeacherEntity> teachers = new HashSet<>();
+    private Set<TeacherEntity> teachers;
 }

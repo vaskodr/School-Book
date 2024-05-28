@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.user.teacher.dto;
 
 import com.nbu.schoolbook.enums.Gender;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,10 @@ public class CreateTeacherDTO {
     private String phone;
     private String email;
     private String username;
+    private String password;
+    @Nullable
     private List<Long> subjectIds;
+    @Nullable
     private Long schoolId;
 
 }

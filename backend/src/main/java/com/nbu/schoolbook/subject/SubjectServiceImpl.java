@@ -55,25 +55,19 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public SubjectDTO updateSubject(Long id, SubjectDTO subjectDTO) {
         SubjectEntity subject = subjectRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                "Subject does not exists with id: " + id
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Subject does not exists with id: " + id));
+
         if (subjectDTO.getName() != null) {
-            subject.setName(subject.getName());
+            subject.setName(subjectDTO.getName());
         }
 
         if (subjectDTO.getTeacherIds() != null) {
-            Set<TeacherEntity> teachers = new HashSet<>(
-                    teacherRepository.findAllById(subjectDTO.getTeacherIds())
-            );
+            Set<TeacherEntity> teachers = new HashSet<>(teacherRepository.findAllById(subjectDTO.getTeacherIds()));
             subject.setTeachers(teachers);
         }
 
         SubjectEntity updatedSubject = subjectRepository.save(subject);
         return subjectMapper.mapEntityToDTO(updatedSubject);
-
     }
 
     @Override

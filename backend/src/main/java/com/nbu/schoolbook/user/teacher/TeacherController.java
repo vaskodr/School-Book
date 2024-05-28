@@ -18,10 +18,10 @@ public class TeacherController {
     @PostMapping("/create")
     public ResponseEntity<TeacherDTO> createTeacher(@RequestBody CreateTeacherDTO createTeacherDTO) {
         TeacherDTO savedTeacher = teacherService.createTeacher(createTeacherDTO);
-        return new ResponseEntity<>(savedTeacher, HttpStatus.CREATED);
+        return ResponseEntity.ok(savedTeacher);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable("id") Long id) {
         TeacherDTO teacherDTO = teacherService.getTeacherById(id);
         return ResponseEntity.ok(teacherDTO);
@@ -33,14 +33,14 @@ public class TeacherController {
         return ResponseEntity.ok(teacherDTOs);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<TeacherDTO> updateTeacher(@PathVariable Long id,
                                                     @RequestBody UpdateTeacherDTO updateTeacherDTO) {
         TeacherDTO updatedTeacher = teacherService.updateTeacher(id, updateTeacherDTO);
         return ResponseEntity.ok(updatedTeacher);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTeacher(@PathVariable Long id) {
         teacherService.deleteTeacher(id);
         return ResponseEntity.ok("Teacher has been deleted successfully!");
