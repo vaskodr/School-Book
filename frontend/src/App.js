@@ -1,23 +1,18 @@
-import logo from './logo.svg';
+import React from 'react';
+import NavigationBar from './UI/NavigationBar/NavigationBar';
 import './App.css';
 
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavigationBar />
+      <div className="text-box left-box">
+        <h1>Електронен дневник</h1>
+
+        <p>Добре дошли в онлайн платформата, създадена за удобство в следенето и управлението на учебния процес!</p>
+        <p>Натиснете "Вход", за да влезете в акаунта си, предоставен от училището.</p>
+      </div>
     </div>
   );
 }
