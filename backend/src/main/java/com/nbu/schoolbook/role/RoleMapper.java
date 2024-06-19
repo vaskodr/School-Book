@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RoleMapper {
-    private static ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public RoleMapper(ModelMapper modelMapper) {
-        RoleMapper.modelMapper = modelMapper;
+        this.modelMapper = modelMapper;
     }
 
     public RoleDTO mapToDTO(RoleEntity role) {

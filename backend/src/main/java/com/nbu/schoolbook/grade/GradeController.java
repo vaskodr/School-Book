@@ -1,6 +1,11 @@
 package com.nbu.schoolbook.grade;
 
+import com.nbu.schoolbook.grade.dto.CreateGradeDTO;
+import com.nbu.schoolbook.grade.dto.GradeDTO;
+import com.nbu.schoolbook.grade.dto.UpdateGradeDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,38 +17,38 @@ public class GradeController {
 
     private final GradeService gradeService;
 
-    @Autowired
     public GradeController(GradeService gradeService) {
         this.gradeService = gradeService;
     }
 
     @PostMapping
-    public ResponseEntity<GradeEntity> createGrade(@RequestBody GradeEntity grade) {
-        GradeEntity createdGrade = gradeService.saveGrade(grade);
-        return ResponseEntity.ok(createdGrade);
+    public ResponseEntity<GradeDTO> createGrade(@RequestBody CreateGradeDTO createGradeDTO) {
+        GradeDTO gradeDTO = gradeService.createGrade(createGradeDTO);
+        return new ResponseEntity<>(gradeDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GradeEntity> updateGrade(@PathVariable long id, @RequestBody GradeEntity grade) {
-        GradeEntity updatedGrade = gradeService.updateGrade(id, grade);
-        return ResponseEntity.ok(updatedGrade);
+    public ResponseEntity<GradeDTO> getGradeById(@PathVariable Long id) {
+        GradeDTO gradeDTO = gradeService.getGradeById(id);
+        return new ResponseEntity<>(gradeDTO, HttpStatus.OK);
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGrade(@PathVariable long id) {
+    public ResponseEntity<Void> deleteGrade(@PathVariable Long id) {
         gradeService.deleteGrade(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GradeEntity> getGradeById(@PathVariable long id) {
-        GradeEntity grade = gradeService.getGradeById(id);
-        return ResponseEntity.ok(grade);
+    public ResponseEntity<GradeDTO> updateGrade(@PathVariable Long id, @RequestBody UpdateGradeDTO updateGradeDTO) {
+        GradeDTO gradeDTO = gradeService.updateGrade(id, updateGradeDTO);
+        return new ResponseEntity<>(gradeDTO, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<GradeEntity>> getAllGrades() {
-        List<GradeEntity> grades = gradeService.getAllGrades();
-        return ResponseEntity.ok(grades);
+    public ResponseEntity<List<GradeDTO>> getAllGrades() {
+        List<GradeDTO> grades = gradeService.getAllGrades();
+        return new ResponseEntity<>(grades, HttpStatus.OK);
     }
 }

@@ -1,6 +1,9 @@
 package com.nbu.schoolbook.program;
 
+import com.nbu.schoolbook.program.dto.CreateProgramDTO;
+import com.nbu.schoolbook.program.dto.UpdateProgramDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,32 +21,32 @@ public class ProgramController {
     }
 
     @PostMapping
-    public ResponseEntity<ProgramEntity> createProgram(@RequestBody ProgramEntity program) {
-        ProgramEntity createdProgram = programService.saveProgram(program);
-        return ResponseEntity.ok(createdProgram);
+    public ResponseEntity<ProgramDTO> createProgram(@RequestBody CreateProgramDTO createProgramDTO) {
+        ProgramDTO programDTO = programService.createProgram(createProgramDTO);
+        return new ResponseEntity<>(programDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProgramEntity> updateProgram(@PathVariable long id, @RequestBody ProgramEntity program) {
-        ProgramEntity updatedProgram = programService.updateProgram(id, program);
-        return ResponseEntity.ok(updatedProgram);
+    public ResponseEntity<ProgramDTO> updateProgram(@PathVariable Long id, @RequestBody UpdateProgramDTO updateProgramDTO) {
+        ProgramDTO programDTO = programService.updateProgram(id, updateProgramDTO);
+        return new ResponseEntity<>(programDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProgram(@PathVariable long id) {
+    public ResponseEntity<Void> deleteProgram(@PathVariable Long id) {
         programService.deleteProgram(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProgramEntity> getProgramById(@PathVariable long id) {
-        ProgramEntity program = programService.getProgramById(id);
-        return ResponseEntity.ok(program);
+    public ResponseEntity<ProgramDTO> getProgramById(@PathVariable Long id) {
+        ProgramDTO programDTO = programService.getProgramById(id);
+        return new ResponseEntity<>(programDTO, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProgramEntity>> getAllPrograms() {
-        List<ProgramEntity> programs = programService.getAllPrograms();
-        return ResponseEntity.ok(programs);
+    public ResponseEntity<List<ProgramDTO>> getAllPrograms() {
+        List<ProgramDTO> programs = programService.getAllPrograms();
+        return new ResponseEntity<>(programs, HttpStatus.OK);
     }
 }

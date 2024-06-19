@@ -19,8 +19,6 @@ import java.util.Set;
 @AllArgsConstructor
 public final class StudentEntity extends UserEntity {
 
-
-
     @OneToMany(mappedBy = "student")
     private Set<GradeEntity> grades;
 
@@ -37,6 +35,4 @@ public final class StudentEntity extends UserEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private ClassEntity studentClass;
-
-
 }

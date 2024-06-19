@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.user.teacher.dto;
 
 import com.nbu.schoolbook.enums.Gender;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

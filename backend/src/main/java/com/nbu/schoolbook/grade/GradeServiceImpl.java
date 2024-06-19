@@ -1,53 +1,89 @@
 package com.nbu.schoolbook.grade;
 
+import com.nbu.schoolbook.class_session.ClassSessionEntity;
+import com.nbu.schoolbook.class_session.ClassSessionRepository;
+import com.nbu.schoolbook.exception.ResourceNotFoundException;
+import com.nbu.schoolbook.grade.dto.CreateGradeDTO;
+import com.nbu.schoolbook.grade.dto.GradeDTO;
+import com.nbu.schoolbook.grade.dto.UpdateGradeDTO;
+import com.nbu.schoolbook.user.student.StudentEntity;
+import com.nbu.schoolbook.user.student.StudentRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class GradeServiceImpl implements GradeService {
 
     private final GradeRepository gradeRepository;
+    private final StudentRepository studentRepository;
+    private final ClassSessionRepository classSessionRepository;
+    private final GradeMapper gradeMapper;
 
-    @Autowired
-    public GradeServiceImpl(GradeRepository gradeRepository) {
-        this.gradeRepository = gradeRepository;
+
+    @Override
+    public GradeDTO createGrade(CreateGradeDTO createGradeDTO) {
+        GradeEntity gradeEntity = new GradeEntity();
+        gradeEntity.setGrade(createGradeDTO.getGrade());
+        gradeEntity.setDate(LocalDate.now());
+
+        StudentEntity student = studentRepository.findById(createGradeDTO.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        gradeEntity.setStudent(student);
+
+        ClassSessionEntity classSession = classSessionRepository.findById(createGradeDTO.getClassSessionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Class session not found"));
+        gradeEntity.setClassSession(classSession);
+
+        GradeEntity savedGrade = gradeRepository.save(gradeEntity);
+        return gradeMapper.mapToDTO(savedGrade);
     }
 
     @Override
-    public GradeEntity saveGrade(GradeEntity grade) {
-        return gradeRepository.save(grade);
+    public GradeDTO getGradeById(Long id) {
+        GradeEntity grade = gradeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
+        return gradeMapper.mapToDTO(grade);
     }
 
     @Override
-    public GradeEntity updateGrade(long id, GradeEntity grade) {
-        Optional<GradeEntity> existingGrade = gradeRepository.findById(id);
-        if (existingGrade.isPresent()) {
-            GradeEntity updatedGrade = existingGrade.get();
-            updatedGrade.setGrade(grade.getGrade());
-            updatedGrade.setDate(grade.getDate());
-            updatedGrade.setClassSession(grade.getClassSession());
-            updatedGrade.setStudent(grade.getStudent());
-            return gradeRepository.save(updatedGrade);
-        } else {
-            throw new RuntimeException("Grade not found with id: " + id);
+    public List<GradeDTO> getAllGrades() {
+        List<GradeEntity> grades = gradeRepository.findAll();
+        return grades.stream()
+                .map(gradeMapper::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public GradeDTO updateGrade(Long id, UpdateGradeDTO updateGradeDTO) {
+        GradeEntity gradeEntity = gradeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
+
+        gradeEntity.setGrade(updateGradeDTO.getGrade());
+
+        StudentEntity student = studentRepository.findById(updateGradeDTO.getStudentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        gradeEntity.setStudent(student);
+
+        ClassSessionEntity classSession = classSessionRepository.findById(updateGradeDTO.getClassSessionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Class session not found"));
+        gradeEntity.setClassSession(classSession);
+
+        GradeEntity updatedGrade = gradeRepository.save(gradeEntity);
+        return gradeMapper.mapToDTO(updatedGrade);
+    }
+
+    @Override
+    public void deleteGrade(Long id) {
+        if (!gradeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Grade not found");
         }
-    }
-
-    @Override
-    public void deleteGrade(long id) {
         gradeRepository.deleteById(id);
-    }
-
-    @Override
-    public GradeEntity getGradeById(long id) {
-        return gradeRepository.findById(id).orElseThrow(() -> new RuntimeException("Grade not found with id: " + id));
-    }
-
-    @Override
-    public List<GradeEntity> getAllGrades() {
-        return gradeRepository.findAll();
     }
 }

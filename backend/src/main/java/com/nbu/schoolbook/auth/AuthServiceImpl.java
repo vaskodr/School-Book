@@ -10,6 +10,8 @@ import com.nbu.schoolbook.user.director.DirectorEntity;
 import com.nbu.schoolbook.user.parent.ParentEntity;
 import com.nbu.schoolbook.user.UserRepository;
 import com.nbu.schoolbook.user.student.StudentEntity;
+import com.nbu.schoolbook.user.student.StudentMapper;
+import com.nbu.schoolbook.user.student.StudentService;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import com.nbu.schoolbook.user.teacher.TeacherMapper;
 import com.nbu.schoolbook.user.teacher.TeacherService;
@@ -32,6 +34,8 @@ public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final TeacherService teacherService;
     private final TeacherMapper teacherMapper;
+    private final StudentService studentService;
+    private final StudentMapper studentMapper;
 
     @Override
     public String login(LoginDTO loginDTO) {
@@ -62,11 +66,9 @@ public class AuthServiceImpl implements AuthService{
         RoleEntity role;
 
         switch (registerDTO.getType().toLowerCase()) {
-//            case "student":
-//                user = new StudentEntity();
-//                role = roleRepository.findByName("ROLE_STUDENT")
-//                        .orElseThrow(() -> new APIException("Role not found!"));
-//                break;
+            case "student":
+                studentService.createStudent(studentMapper.mapRegisterDTOToCreateDTO(registerDTO));
+                break;
             case "teacher":
                 teacherService.createTeacher(teacherMapper.mapRegisterDTOToCreateDTO(registerDTO));
                 break;

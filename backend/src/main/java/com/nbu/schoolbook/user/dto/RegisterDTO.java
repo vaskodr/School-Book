@@ -34,10 +34,17 @@ public class RegisterDTO {
     private String password;
     @NotBlank
     private String type;
-
     @Nullable
     private List<Long> subjectIds;
     @Nullable
     private Long schoolId;
+    @Nullable
+    private List<Long> gradeIds;
+    @Nullable
+    private List<Long> absenceIds;
+    @Nullable
+    private List<Long> parentIds;
+    @Nullable
+    private Long classId;
 
 }
