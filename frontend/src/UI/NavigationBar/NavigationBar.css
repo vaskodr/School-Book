@@ -1,0 +1,22 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #3d2e25;
+    color: rgb(237, 255, 244);
+  }
+  
+  .navbar-button {
+    background-color: #aa9684;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: auto;
+  }
+  
+  .login-button:hover {
+    background-color: #9b7a4f;
+  }
