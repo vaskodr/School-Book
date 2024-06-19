@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.user.dto;
 
 import com.nbu.schoolbook.enums.Gender;
+import com.nbu.schoolbook.role.dto.RoleDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,5 +24,5 @@ public class UpdateUserDTO {
     private String email;
     private String username;
     private String password;
-    private String roleName;
+    private List<RoleDTO> roles;
 }

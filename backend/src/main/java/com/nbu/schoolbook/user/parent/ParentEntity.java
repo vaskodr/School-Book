@@ -19,7 +19,15 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ParentEntity extends UserEntity {
+public class ParentEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 
     @ManyToMany(mappedBy = "parents")
     private Set<StudentEntity> students;

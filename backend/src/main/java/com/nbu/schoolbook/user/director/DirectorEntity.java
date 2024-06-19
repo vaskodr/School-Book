@@ -12,10 +12,17 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
-public class DirectorEntity extends UserEntity {
+public class DirectorEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
+
+    @OneToOne
     private SchoolEntity school;
 
 }

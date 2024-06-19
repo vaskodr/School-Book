@@ -17,7 +17,15 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public final class StudentEntity extends UserEntity {
+public final class StudentEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 
     @OneToMany(mappedBy = "student")
     private Set<GradeEntity> grades;

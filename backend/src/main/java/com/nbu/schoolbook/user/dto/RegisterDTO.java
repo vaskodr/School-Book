@@ -22,7 +22,9 @@ public class RegisterDTO {
     private String firstName;
     @NotBlank
     private String lastName;
+    @NotBlank
     private LocalDate birthDate;
+    @NotBlank
     private Gender gender;
     @NotBlank
     private String phone;
@@ -33,7 +35,7 @@ public class RegisterDTO {
     @NotBlank
     private String password;
     @NotBlank
-    private String type;
+    private List<String> roles;
     @Nullable
     private List<Long> subjectIds;
     @Nullable

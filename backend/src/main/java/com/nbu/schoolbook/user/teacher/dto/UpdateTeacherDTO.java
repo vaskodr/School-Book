@@ -22,6 +22,7 @@ public class UpdateTeacherDTO {
     private String phone;
     private String email;
     private String username;
+    private String password;
     private List<Long> subjectIds;
     private Long schoolId;
 }

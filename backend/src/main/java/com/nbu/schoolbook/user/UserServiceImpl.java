@@ -3,6 +3,7 @@ package com.nbu.schoolbook.user;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
+import com.nbu.schoolbook.role.dto.RoleDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.dto.UpdateUserDTO;
 import com.nbu.schoolbook.user.dto.UserDTO;
@@ -10,12 +11,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -25,13 +28,19 @@ public class UserServiceImpl implements UserService{
     @Override
     public RegisterDTO createUser(RegisterDTO registerDTO) {
         UserEntity user = userMapper.mapRegisterDTOToEntity(registerDTO);
-        RoleEntity role = roleRepository.findByName("ROLE_" + registerDTO.getType())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                "Role does not exists with name: " + registerDTO.getType()
-                        )
-                );
-        user.setRole(role);
+        Set<RoleEntity> roles = new HashSet<>();
+
+        for (String roleName : registerDTO.getRoles()) {
+            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException(
+                                    "Role does not exist with name: " + roleName.toUpperCase()
+                            )
+                    );
+            roles.add(role);
+        }
+        user.setRoles(roles);
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         UserEntity savedUser = userRepository.save(user);
         return userMapper.mapToRegisterDTO(savedUser);
     }
@@ -41,7 +50,7 @@ public class UserServiceImpl implements UserService{
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
-                                "User does not found with id: " + id
+                                "User not found with id: " + id
                         )
                 );
         return userMapper.mapToDTO(user);
@@ -59,6 +68,7 @@ public class UserServiceImpl implements UserService{
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found with id: " + id));
+
         if (userDTO.getFirstName() != null) {
             user.setFirstName(userDTO.getFirstName());
         }
@@ -84,10 +94,14 @@ public class UserServiceImpl implements UserService{
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         }
 
-        RoleEntity role = roleRepository.findByName("ROLE_" + userDTO.getRoleName().toUpperCase())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Role does not exist with name: " + userDTO.getRoleName().toUpperCase()));
-        user.setRole(role);
+        Set<RoleEntity> roles = new HashSet<>();
+        for (RoleDTO roleDTO : userDTO.getRoles()) {
+            RoleEntity role = roleRepository.findByName(roleDTO.getName())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Role does not exist with name: " + roleDTO.getName()));
+            roles.add(role);
+        }
+        user.setRoles(roles);
 
         UserEntity updatedUser = userRepository.save(user);
         return userMapper.mapEntityToUpdateDTO(updatedUser);

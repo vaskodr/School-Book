@@ -12,16 +12,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-
         UserEntity user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(
                         () -> new UsernameNotFoundException(
@@ -29,8 +30,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                         )
                 );
 
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getName());
-        return new User(user.getUsername(), user.getPassword(), Collections.singletonList(authority));
+        Set<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet());
 
+        return new User(user.getUsername(), user.getPassword(), authorities);
     }
 }

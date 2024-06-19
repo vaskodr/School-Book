@@ -1,5 +1,7 @@
 package com.nbu.schoolbook.config;
 
+import com.nbu.schoolbook.security.CustomUserDetailsService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,13 +20,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
-
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
@@ -39,37 +38,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
-                (authorize) -> authorize
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // Permit all GET requests under /api
                         .requestMatchers("/api/subject/**").permitAll()
                         .requestMatchers("/api/school/**").permitAll()
                         .requestMatchers("/api/teacher/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll() // Permit access to login and register endpoints
                         .anyRequest().authenticated()
-//                        authorize.anyRequest().authenticated()
-                ).httpBasic(
-                        Customizer.withDefaults()
-                );
+                )
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        UserDetails vaskodr = User.builder()
-//                .username("vaskodr")
-//                .password(passwordEncoder().encode("vasko123"))
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password(passwordEncoder().encode("admin123"))
-//                .roles("ADMIN")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(vaskodr, admin);
-//    }
-
 }

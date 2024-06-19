@@ -16,7 +16,15 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class TeacherEntity extends UserEntity {
+public class TeacherEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;
 
     @ManyToOne
     private SchoolEntity school;
