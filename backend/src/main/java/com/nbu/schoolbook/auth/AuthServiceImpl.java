@@ -1,8 +1,11 @@
 package com.nbu.schoolbook.auth;
 
+import com.nbu.schoolbook.auth.dto.JwtAuthResponse;
+import com.nbu.schoolbook.auth.dto.LoginResponseDTO;
 import com.nbu.schoolbook.exception.APIException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
+import com.nbu.schoolbook.security.JwtTokenProvider;
 import com.nbu.schoolbook.user.director.DirectorRepository;
 import com.nbu.schoolbook.user.dto.LoginDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
@@ -25,11 +28,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -44,16 +49,46 @@ public class AuthServiceImpl implements AuthService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Override
-    public String login(LoginDTO loginDTO) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsernameOrEmail(),
-                loginDTO.getPassword()
-        ));
+    public JwtAuthResponse login(LoginDTO loginDTO) throws APIException {
+        try {
+            log.info("Attempting to authenticate user: {}", loginDTO.getUsernameOrEmail());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getUsernameOrEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
 
-        return "User Logged-In successfully!";
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtTokenProvider.generateToken(authentication);
+
+            log.info("User {} authenticated successfully. JWT Token generated.", loginDTO.getUsernameOrEmail());
+
+            Optional<UserEntity> userOptional = userRepository.findByUsernameOrEmail(loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail());
+
+            List<String> roles = new ArrayList<>();
+            if (userOptional.isPresent()) {
+                UserEntity loggedInUser = userOptional.get();
+                roles = loggedInUser.getRoles().stream()
+                        .map(RoleEntity::getName)
+                        .collect(Collectors.toList());
+            }
+
+            JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+            jwtAuthResponse.setRoles(roles);
+            jwtAuthResponse.setAccessToken(token);
+
+            return jwtAuthResponse;
+
+        } catch (Exception e) {
+            log.error("Authentication failed for user: {}", loginDTO.getUsernameOrEmail(), e);
+            throw new APIException("Invalid username or password");
+        }
     }
 
     @Override
@@ -103,5 +138,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return "User registered successfully!";
+    }
+
+    @Override
+    public void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

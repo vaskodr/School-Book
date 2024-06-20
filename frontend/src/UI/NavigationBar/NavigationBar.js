@@ -20,10 +20,10 @@ class NavigationBar extends React.Component {
 
   render() {
     return (
-      <div className="navbar">
-        <button className="navbar-button" onClick={this.handleLoginClick}>Вход</button>
-        {this.state.isLoginModalOpen && <LoginModal onClose={this.handleCloseModal} />}
-      </div>
+        <div className="navbar">
+          <button className="navbar-button" onClick={this.handleLoginClick}>Вход</button>
+          {this.state.isLoginModalOpen && <LoginModal onClose={this.handleCloseModal} />}
+        </div>
     );
   }
 }

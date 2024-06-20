@@ -1,7 +1,9 @@
 package com.nbu.schoolbook.role;
 
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
+import com.nbu.schoolbook.role.dto.CreateRoleDTO;
 import com.nbu.schoolbook.role.dto.RoleDTO;
+import com.nbu.schoolbook.role.dto.UpdateRoleDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +18,10 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
-    public RoleDTO createRole(RoleDTO roleDTO) {
-        RoleEntity role = roleMapper.mapToEntity(roleDTO);
-        role = roleRepository.save(role);
+    public RoleDTO createRole(CreateRoleDTO createRoleDTO) {
+        RoleEntity role = new RoleEntity();
+        role.setName("ROLE_" + createRoleDTO.getName());
+        roleRepository.save(role);
         return roleMapper.mapToDTO(role);
     }
 
@@ -42,7 +45,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO updateRole(Long id, RoleDTO roleDTO) {
+    public RoleDTO updateRole(Long id, UpdateRoleDTO updateRoleDTO) {
         RoleEntity role = roleRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -50,7 +53,7 @@ public class RoleServiceImpl implements RoleService {
                         )
                 );
 
-        role.setName(roleDTO.getName());
+        role.setName("ROLE_" + updateRoleDTO.getName());
 
         role = roleRepository.save(role);
         return roleMapper.mapToDTO(role);

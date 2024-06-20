@@ -1,7 +1,9 @@
 package com.nbu.schoolbook.role;
 
 import com.nbu.schoolbook.role.RoleService;
+import com.nbu.schoolbook.role.dto.CreateRoleDTO;
 import com.nbu.schoolbook.role.dto.RoleDTO;
+import com.nbu.schoolbook.role.dto.UpdateRoleDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +16,14 @@ import java.util.List;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/roles")
+@PreAuthorize("hasRole('ADMIN')")
 public class RoleController {
 
     private RoleService roleService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
-    public ResponseEntity<RoleDTO> createRole(@RequestBody RoleDTO roleDTO) {
-        RoleDTO savedRole = roleService.createRole(roleDTO);
+    public ResponseEntity<RoleDTO> createRole(@RequestBody CreateRoleDTO createRoleDTO) {
+        RoleDTO savedRole = roleService.createRole(createRoleDTO);
         return new ResponseEntity<>(savedRole, HttpStatus.CREATED);
     }
 
@@ -37,15 +39,13 @@ public class RoleController {
         return ResponseEntity.ok(roleDTOs);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
     public ResponseEntity<RoleDTO> updateRole(@PathVariable("id") Long id,
-                                              @RequestBody RoleDTO roleDTO) {
-        RoleDTO updatedRole = roleService.updateRole(id, roleDTO);
+                                              @RequestBody UpdateRoleDTO updateRoleDTO) {
+        RoleDTO updatedRole = roleService.updateRole(id, updateRoleDTO);
         return ResponseEntity.ok(updatedRole);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteRole(@PathVariable("id") Long id) {
         roleService.deleteRole(id);
