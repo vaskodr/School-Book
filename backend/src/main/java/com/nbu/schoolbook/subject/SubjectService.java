@@ -2,14 +2,15 @@ package com.nbu.schoolbook.subject;
 
 import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
 import com.nbu.schoolbook.subject.dto.SubjectDTO;
+import com.nbu.schoolbook.subject.dto.UpdateSubjectDTO;
 
 import java.util.List;
 
 public interface SubjectService {
-    CreateSubjectDTO saveSubject(CreateSubjectDTO subjectDTO);
+    void createSubject(CreateSubjectDTO subjectDTO);
     SubjectDTO getSubjectById(Long id);
     List<SubjectDTO> getAllSubjects();
-    SubjectDTO updateSubject(Long id, SubjectDTO subjectDTO);
+    void updateSubject(Long id, UpdateSubjectDTO updateSubjectDTO);
     void deleteSubject(Long id);
 
 }

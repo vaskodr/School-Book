@@ -14,35 +14,64 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/programs")
+@RequestMapping("/api/school/{schoolId}/program")
 @AllArgsConstructor
 public class ProgramController {
 
     private final ProgramService programService;
 
 
+    @PostMapping("/classes/{classId}/create")
+    public ResponseEntity<String> createProgram(
+            @PathVariable Long schoolId,
+            @PathVariable Long classId,
+            @RequestBody CreateProgramDTO createProgramDTO) {
+        programService.createProgram(schoolId, classId, createProgramDTO);
+        return ResponseEntity.ok(
+                "Program for class id: "
+                + classId
+                + " in school id:"
+                + schoolId
+                + " created successfully!"
+        );
+    }
 
-    @GetMapping("/{programId}")
-    public ResponseEntity<ProgramDTO> getProgramById(@PathVariable Long programId) {
-        ProgramDTO programDTO = programService.getProgramById(programId);
+    @GetMapping("/classes/{classId}")
+    public ResponseEntity<ProgramDTO> getClassProgram(@PathVariable Long schoolId, @PathVariable Long classId) {
+        ProgramDTO programDTO = programService.getClassProgram(schoolId, classId);
         return ResponseEntity.ok(programDTO);
     }
 
-    @GetMapping
+
+    @GetMapping("/all")
     public ResponseEntity<List<ProgramDTO>> getAllProgramsBySchoolId(@PathVariable Long schoolId) {
         List<ProgramDTO> programs = programService.getAllProgramsBySchoolId(schoolId);
         return ResponseEntity.ok(programs);
     }
 
-    @PutMapping("/{programId}")
-    public ResponseEntity<ProgramDTO> updateProgram(@PathVariable Long programId, @RequestBody UpdateProgramDTO updateProgramDTO) {
-        ProgramDTO programDTO = programService.updateProgram(programId, updateProgramDTO);
-        return ResponseEntity.ok(programDTO);
+
+    @PutMapping("/classes/{classId}/{programId}")
+    public ResponseEntity<String> updateProgram(@PathVariable Long schoolId,
+                                                    @PathVariable Long classId,
+                                                    @PathVariable Long programId,
+                                                    @RequestBody UpdateProgramDTO updateProgramDTO) {
+        programService.updateProgram(schoolId, classId, programId, updateProgramDTO);
+        return ResponseEntity.ok(
+                "Program with id: "
+                + programId
+                + " in school id: "
+                + schoolId
+                + " in class id: "
+                + classId
+                + " updated successfully"
+        );
     }
 
-    @DeleteMapping("/{programId}")
-    public ResponseEntity<Void> deleteProgram(@PathVariable Long programId) {
-        programService.deleteProgram(programId);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/classes/{classId}/{programId}")
+    public ResponseEntity<String> deleteProgram(@PathVariable Long schoolId,
+                                                @PathVariable Long classId,
+                                                @PathVariable Long programId) {
+        programService.deleteProgram(schoolId, classId, programId);
+        return ResponseEntity.ok("Program deleted successfully!");
     }
 }

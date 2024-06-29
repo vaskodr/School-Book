@@ -4,6 +4,7 @@ import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
 import com.nbu.schoolbook.subject.dto.SubjectDTO;
+import com.nbu.schoolbook.subject.dto.UpdateSubjectDTO;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
 import lombok.AllArgsConstructor;
@@ -26,11 +27,10 @@ public class SubjectServiceImpl implements SubjectService {
     private final TeacherRepository teacherRepository;
 
     @Override
-    public CreateSubjectDTO saveSubject(CreateSubjectDTO createSubjectDTO) {
+    public void createSubject(CreateSubjectDTO createSubjectDTO) {
         SubjectEntity subject = subjectMapper.mapCreateDTOToEntity(createSubjectDTO);
         subject.setClassSessions(new HashSet<>());
-        subject = subjectRepository.save(subject);
-        return subjectMapper.mapEntityToCreateDTO(subject);
+        subjectRepository.save(subject);
 
     }
 
@@ -54,21 +54,15 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public SubjectDTO updateSubject(Long id, SubjectDTO subjectDTO) {
+    public void updateSubject(Long id, UpdateSubjectDTO updateSubjectDTO) {
         SubjectEntity subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject does not exists with id: " + id));
 
-        if (subjectDTO.getName() != null) {
-            subject.setName(subjectDTO.getName());
+        if (updateSubjectDTO.getName() != null) {
+            subject.setName(updateSubjectDTO.getName());
         }
 
-        if (subjectDTO.getTeacherIds() != null) {
-            Set<TeacherEntity> teachers = new HashSet<>(teacherRepository.findAllById(subjectDTO.getTeacherIds()));
-            subject.setTeachers(teachers);
-        }
-
-        SubjectEntity updatedSubject = subjectRepository.save(subject);
-        return subjectMapper.mapEntityToDTO(updatedSubject);
+        subjectRepository.save(subject);
     }
 
     @Override

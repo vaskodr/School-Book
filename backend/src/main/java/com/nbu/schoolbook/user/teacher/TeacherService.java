@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface TeacherService {
     TeacherDTO registerTeacher(RegisterDTO registerDTO, Long schoolId);
-    TeacherDTO getTeacherById(Long id);
-    List<TeacherDTO> getAllTeachers();
-    TeacherDTO updateTeacher(Long id, UpdateTeacherDTO updateTeacherDTO);
-    void deleteTeacher(Long id);
+    TeacherDTO getTeacherById(Long schoolId, Long teacherId);
+    List<TeacherDTO> getAllTeachersBySchoolId(Long schoolId);
+    void updateTeacher(Long schoolId, Long teacherId, UpdateTeacherDTO updateTeacherDTO);
+    void deleteTeacher(Long schoolId, Long teacherId);
 
     // TODO: methods assignSubjectToTeacher
     void assignClassMentor(TeacherEntity teacher, ClassEntity mentorClass);

@@ -8,6 +8,7 @@ import com.nbu.schoolbook.class_entity.dto.CreateClassDTO;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.school.dto.CreateSchoolDTO;
 import com.nbu.schoolbook.school.dto.SchoolDTO;
+import com.nbu.schoolbook.school.dto.UpdateSchoolDTO;
 import com.nbu.schoolbook.user.director.DirectorService;
 import com.nbu.schoolbook.user.director.dto.DirectorDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
@@ -46,10 +47,9 @@ public class SchoolServiceImpl implements SchoolService {
     private final StudentRepository studentRepository;
 
     @Override
-    public SchoolDTO createSchool(CreateSchoolDTO createSchoolDTO) {
+    public void createSchool(CreateSchoolDTO createSchoolDTO) {
        SchoolEntity school = schoolMapper.mapCreateToEntity(createSchoolDTO);
-       school = schoolRepository.save(school);
-       return schoolMapper.mapToDTO(school);
+       schoolRepository.save(school);
     }
 
     @Override
@@ -73,31 +73,16 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
-    public SchoolDTO updateSchool(long id, SchoolDTO updateSchool) {
+    public void updateSchool(long id, UpdateSchoolDTO updateSchoolDTO) {
         SchoolEntity school = schoolRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found with id: " + id));
-
-        if (updateSchool.getName() != null) {
-            school.setName(updateSchool.getName());
+        if (updateSchoolDTO.getName() != null) {
+            school.setName(updateSchoolDTO.getName());
         }
-        if (updateSchool.getAddress() != null) {
-            school.setAddress(updateSchool.getAddress());
+        if (updateSchoolDTO.getAddress() != null) {
+            school.setAddress(updateSchoolDTO.getAddress());
         }
-//        if (updateSchool.getClassIds() != null) {
-//            Set<ClassEntity> classes = new HashSet<>(
-//                    classRepository.findAllById(updateSchool.getClassIds())
-//            );
-//            school.setClasses(classes);
-//        }
-//        if (updateSchool.getTeacherIds() != null) {
-//            Set<TeacherEntity> teachers = new HashSet<>(
-//                    teacherRepository.findAllById(updateSchool.getTeacherIds())
-//            );
-//            school.setTeachers(teachers);
-//        }
-
-        school = schoolRepository.save(school);
-        return schoolMapper.mapToDTO(school);
+        schoolRepository.save(school);
     }
 
     @Override
@@ -129,20 +114,20 @@ public class SchoolServiceImpl implements SchoolService {
 //        return false;
 //    }
 
-    @Override
-    public ClassDTO addClass(Long schoolId, CreateClassDTO createClassDTO) {
-        SchoolEntity school = schoolRepository.findById(schoolId)
-                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
-
-        ClassEntity newClass = new ClassEntity();
-        newClass.setName(createClassDTO.getName());
-        newClass.setLevel(createClassDTO.getLevel());
-        newClass.setSchool(school);
-
-
-        ClassEntity savedClass = classRepository.save(newClass);
-        return classMapper.mapToDTO(savedClass);
-    }
+//    @Override
+//    public ClassDTO addClass(Long schoolId, CreateClassDTO createClassDTO) {
+//        SchoolEntity school = schoolRepository.findById(schoolId)
+//                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
+//
+//        ClassEntity newClass = new ClassEntity();
+//        newClass.setName(createClassDTO.getName());
+//        newClass.setLevel(createClassDTO.getLevel());
+//        newClass.setSchool(school);
+//
+//
+//        ClassEntity savedClass = classRepository.save(newClass);
+//        return classMapper.mapToDTO(savedClass);
+//    }
 
 
     @Override

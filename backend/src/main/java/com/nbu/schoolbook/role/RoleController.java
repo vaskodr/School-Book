@@ -15,21 +15,21 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/role")
 @PreAuthorize("hasRole('ADMIN')")
 public class RoleController {
 
     private RoleService roleService;
 
-    @PostMapping("/add")
-    public ResponseEntity<RoleDTO> createRole(@RequestBody CreateRoleDTO createRoleDTO) {
-        RoleDTO savedRole = roleService.createRole(createRoleDTO);
-        return new ResponseEntity<>(savedRole, HttpStatus.CREATED);
+    @PostMapping("/create")
+    public ResponseEntity<String> createRole(@RequestBody CreateRoleDTO createRoleDTO) {
+        roleService.createRole(createRoleDTO);
+        return ResponseEntity.ok("Role with name: ROLE_" + createRoleDTO.getName() + " created successfully!");
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<RoleDTO> getRoleById(@PathVariable("id") Long id) {
-        RoleDTO roleDTO = roleService.getRoleById(id);
+    @GetMapping("{roleId}")
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long roleId) {
+        RoleDTO roleDTO = roleService.getRoleById(roleId);
         return ResponseEntity.ok(roleDTO);
     }
 
@@ -39,16 +39,16 @@ public class RoleController {
         return ResponseEntity.ok(roleDTOs);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<RoleDTO> updateRole(@PathVariable("id") Long id,
+    @PutMapping("{roleId}")
+    public ResponseEntity<String> updateRole(@PathVariable Long roleId,
                                               @RequestBody UpdateRoleDTO updateRoleDTO) {
-        RoleDTO updatedRole = roleService.updateRole(id, updateRoleDTO);
-        return ResponseEntity.ok(updatedRole);
+        roleService.updateRole(roleId, updateRoleDTO);
+        return ResponseEntity.ok("Role with id: " + roleId + " updated successfully!");
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteRole(@PathVariable("id") Long id) {
-        roleService.deleteRole(id);
+    @DeleteMapping("{roleId}")
+    public ResponseEntity<String> deleteRole(@PathVariable Long roleId) {
+        roleService.deleteRole(roleId);
         return ResponseEntity.ok("Role deleted successfully");
     }
 

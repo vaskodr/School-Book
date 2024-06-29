@@ -8,6 +8,7 @@ import com.nbu.schoolbook.class_session.ClassSessionRepository;
 import com.nbu.schoolbook.class_session.ClassSessionService;
 import com.nbu.schoolbook.class_session.dto.ClassSessionDTO;
 import com.nbu.schoolbook.class_session.dto.CreateClassSessionDTO;
+import com.nbu.schoolbook.class_session.dto.UpdateClassSessionDTO;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.program.dto.CreateProgramDTO;
 import com.nbu.schoolbook.program.dto.ProgramDTO;
@@ -47,7 +48,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     @Transactional
-    public ProgramDTO createProgram(Long schoolId, Long classId, CreateProgramDTO createProgramDTO) {
+    public void createProgram(Long schoolId, Long classId, CreateProgramDTO createProgramDTO) {
         ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
                 .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
 
@@ -65,26 +66,11 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         programEntity = programRepository.save(programEntity);
-        return programMapper.mapToDTO(programEntity);
-    }
-
-    @Override
-    public ProgramDTO getProgramById(Long id) {
-        ProgramEntity program = programRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Program not found!"));
-        return programMapper.mapToDTO(program);
-    }
-
-    @Override
-    public List<ProgramDTO> getAllPrograms() {
-        return programRepository.findAll().stream()
-                .map(programMapper::mapToDTO)
-                .collect(Collectors.toList());
     }
 
     @Override
     public ProgramDTO getClassProgram(Long schoolId, Long classId) {
-        Optional<ProgramEntity> optionalProgram = programRepository.findBySchoolIdAndClassId(schoolId, classId);
+        Optional<ProgramEntity> optionalProgram = programRepository.findByAssociatedClassSchoolIdAndAssociatedClassId(schoolId, classId);
 
         if (optionalProgram.isEmpty()) {
             throw new RuntimeException("Program not found");
@@ -98,54 +84,61 @@ public class ProgramServiceImpl implements ProgramService {
 
         return new ProgramDTO(programEntity.getId(), programEntity.getAssociatedClass().getId(), classSessions);
     }
-
-    @Override
-    public ProgramDTO getClassProgramByStudentId(Long schoolId, Long studentId) {
-        Optional<ProgramEntity> optionalProgram = programRepository.findBySchoolIdAndStudentId(schoolId, studentId);
-
-        if (optionalProgram.isEmpty()) {
-            throw new RuntimeException("Program not found");
-        }
-
-        ProgramEntity programEntity = optionalProgram.get();
-
-        List<ClassSessionDTO> classSessions = programEntity.getClassSessions().stream()
-                .map(cs -> modelMapper.map(cs, ClassSessionDTO.class))
-                .collect(Collectors.toList());
-
-        return new ProgramDTO(programEntity.getId(), programEntity.getAssociatedClass().getId(), classSessions);
-    }
-
 
     @Override
     public List<ProgramDTO> getAllProgramsBySchoolId(Long schoolId) {
-        List<ClassEntity> classes = classRepository.findClassesBySchoolId(schoolId);
-        return programRepository.findAllByAssociatedClassIn(classes).stream()
+        return programRepository.findAllByAssociatedClassSchoolId(schoolId).stream()
                 .map(program -> modelMapper.map(program, ProgramDTO.class))
                 .collect(Collectors.toList());
     }
 
-
     @Override
-    @Transactional
-    public ProgramDTO updateProgram(Long id, UpdateProgramDTO updateProgramDTO) {
-        ProgramEntity program = programRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Program not found!"));
+    public ProgramDTO getClassProgramByStudentId(Long schoolId, Long studentId) {
+        Optional<ProgramEntity> optionalProgram = programRepository.findByAssociatedClassSchoolIdAndAssociatedClassStudentsId(schoolId, studentId);
 
-        program.setAssociatedClass(classRepository.findById(updateProgramDTO.getClassId())
-                .orElseThrow(() -> new RuntimeException("Class not found!")));
-        programRepository.save(program);
+        if (optionalProgram.isEmpty()) {
+            throw new RuntimeException("Program not found");
+        }
 
-        updateProgramDTO.getClassSessions().forEach(sessionDTO -> {
-            classSessionService.updateClassSession(sessionDTO.getId(), sessionDTO);
-        });
+        ProgramEntity programEntity = optionalProgram.get();
 
-        return programMapper.mapToDTO(program);
+        List<ClassSessionDTO> classSessions = programEntity.getClassSessions().stream()
+                .map(cs -> modelMapper.map(cs, ClassSessionDTO.class))
+                .collect(Collectors.toList());
+
+        return new ProgramDTO(programEntity.getId(), programEntity.getAssociatedClass().getId(), classSessions);
     }
 
     @Override
     @Transactional
-    public void deleteProgram(Long id) {
-        programRepository.deleteById(id);
+    public void updateProgram(Long schoolId, Long classId, Long programId, UpdateProgramDTO updateProgramDTO) {
+        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
+                .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
+
+        ProgramEntity programEntity = programRepository.findById(programId)
+                .orElseThrow(() -> new RuntimeException("Program not found!"));
+
+        programEntity.setAssociatedClass(classEntity);
+
+        programEntity.getClassSessions().clear();
+        programEntity = programRepository.save(programEntity);
+
+        for (CreateClassSessionDTO sessionDTO : updateProgramDTO.getClassSessions()) {
+            ClassSessionDTO classSessionDTO = classSessionService.createClassSession(sessionDTO, programEntity.getId());
+            ClassSessionEntity classSessionEntity = classSessionMapper.mapToEntity(classSessionDTO);
+            // Ensure the entity is managed
+            classSessionEntity = classSessionRepository.save(classSessionEntity);
+            programEntity.getClassSessions().add(classSessionEntity);
+        }
+
+        programRepository.save(programEntity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProgram(Long schoolId, Long classId, Long programId) {
+        ProgramEntity programEntity = programRepository.findByIdAndAssociatedClassSchoolIdAndAssociatedClassId(programId, schoolId, classId)
+                .orElseThrow(() -> new RuntimeException("Program not found for the given school and class"));
+        programRepository.delete(programEntity);
     }
 }

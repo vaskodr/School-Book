@@ -2,6 +2,7 @@ package com.nbu.schoolbook.subject;
 
 import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
 import com.nbu.schoolbook.subject.dto.SubjectDTO;
+import com.nbu.schoolbook.subject.dto.UpdateSubjectDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,32 +17,32 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
-    @PostMapping
-    public ResponseEntity<CreateSubjectDTO> createSubject(@RequestBody CreateSubjectDTO createSubjectDTO) {
-        CreateSubjectDTO createdSubject = subjectService.saveSubject(createSubjectDTO);
-        return ResponseEntity.ok(createdSubject);
+    @PostMapping("/create")
+    public ResponseEntity<String> createSubject(@RequestBody CreateSubjectDTO createSubjectDTO) {
+        subjectService.createSubject(createSubjectDTO);
+        return ResponseEntity.ok("Subject with name: " + createSubjectDTO.getName() + " created successfully!");
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<SubjectDTO> getSubjectById(@PathVariable("id") Long id) {
-        SubjectDTO subjectDTO = subjectService.getSubjectById(id);
+    @GetMapping("/{subjectId}")
+    public ResponseEntity<SubjectDTO> getSubjectById(@PathVariable Long subjectId) {
+        SubjectDTO subjectDTO = subjectService.getSubjectById(subjectId);
         return ResponseEntity.ok(subjectDTO);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/all")
     public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
         List<SubjectDTO> subjects = subjectService.getAllSubjects();
         return ResponseEntity.ok(subjects);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SubjectDTO> updateSubject(@PathVariable("id") Long id, @RequestBody SubjectDTO subjectDTO) {
-        SubjectDTO updatedSubject = subjectService.updateSubject(id, subjectDTO);
-        return ResponseEntity.ok(updatedSubject);
+    @PutMapping("/{subjectId}")
+    public ResponseEntity<String> updateSubject(@PathVariable Long subjectId, @RequestBody UpdateSubjectDTO updateSubjectDTO) {
+        subjectService.updateSubject(subjectId, updateSubjectDTO);
+        return ResponseEntity.ok("Subject with id: " + subjectId + " successfully updated!");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSubject(@PathVariable("id") Long id) {
-        subjectService.deleteSubject(id);
+    @DeleteMapping("/{subjectId}")
+    public ResponseEntity<String> deleteSubject(@PathVariable Long subjectId) {
+        subjectService.deleteSubject(subjectId);
         return ResponseEntity.ok("Subject deleted successfully!");
     }
 

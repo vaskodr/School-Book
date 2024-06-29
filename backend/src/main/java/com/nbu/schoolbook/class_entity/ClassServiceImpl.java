@@ -31,30 +31,20 @@ public class ClassServiceImpl implements ClassService{
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-//    @Override
-//    public ClassDTO createClass(CreateClassDTO createClassDTO) {
-//        ClassEntity classEntity = new ClassEntity();
-//
-//        classEntity.setName(createClassDTO.getName());
-//        classEntity.setLevel(createClassDTO.getLevel());
-//
-//        SchoolEntity school = schoolRepository.findById(createClassDTO.getSchoolId())
-//                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
-//        classEntity.setSchool(school);
-//
-//        TeacherEntity mentor = teacherRepository.findById(createClassDTO.getMentorId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Mentor not found"));
-//        classEntity.setMentor(mentor);
-//
-//        Set<StudentEntity> students = createClassDTO.getStudentIds().stream()
-//                .map(id -> studentRepository.findById(id)
-//                        .orElseThrow(() -> new ResourceNotFoundException("Student not found")))
-//                .collect(Collectors.toSet());
-//        classEntity.setStudents(students);
-//
-//        ClassEntity savedClass = classRepository.save(classEntity);
-//        return classMapper.mapToDTO(savedClass);
-//    }
+    @Override
+    public ClassDTO createClass(Long schoolId, CreateClassDTO createClassDTO) {
+        SchoolEntity school = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
+
+        ClassEntity newClass = new ClassEntity();
+        newClass.setName(createClassDTO.getName());
+        newClass.setLevel(createClassDTO.getLevel());
+        newClass.setSchool(school);
+
+
+        ClassEntity savedClass = classRepository.save(newClass);
+        return classMapper.mapToDTO(savedClass);
+    }
 
     @Override
     public ClassDTO getClassById(Long id) {

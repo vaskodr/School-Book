@@ -12,34 +12,10 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/school/{schoolId}")
+@RequestMapping("/api/school/{schoolId}/teacher")
 public class TeacherController {
     private final TeacherService teacherService;
 
-    @GetMapping("/teacher/{id}")
-    public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable("id") Long id) {
-        TeacherDTO teacherDTO = teacherService.getTeacherById(id);
-        return ResponseEntity.ok(teacherDTO);
-    }
-
-    @GetMapping("teacher/list")
-    public ResponseEntity<List<TeacherDTO>> getAllTeachers() {
-        List<TeacherDTO> teacherDTOs = teacherService.getAllTeachers();
-        return ResponseEntity.ok(teacherDTOs);
-    }
-
-    @PutMapping("/teacher/{id}")
-    public ResponseEntity<TeacherDTO> updateTeacher(@PathVariable Long id,
-                                                    @RequestBody UpdateTeacherDTO updateTeacherDTO) {
-        TeacherDTO updatedTeacher = teacherService.updateTeacher(id, updateTeacherDTO);
-        return ResponseEntity.ok(updatedTeacher);
-    }
-
-    @DeleteMapping("teacher/{id}")
-    public ResponseEntity<String> deleteTeacher(@PathVariable Long id) {
-        teacherService.deleteTeacher(id);
-        return ResponseEntity.ok("Teacher has been deleted successfully!");
-    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/teacher/add-teacher")
@@ -47,4 +23,40 @@ public class TeacherController {
         TeacherDTO teacherDTO = teacherService.registerTeacher(createTeacherDTO, schoolId);
         return ResponseEntity.ok(teacherDTO);
     }
+
+    @GetMapping("/{teacherId}")
+    public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable Long schoolId,
+                                                     @PathVariable Long teacherId) {
+        TeacherDTO teacherDTO = teacherService.getTeacherById(schoolId, teacherId);
+        return ResponseEntity.ok(teacherDTO);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<TeacherDTO>> getAllTeachers(@PathVariable Long schoolId) {
+        List<TeacherDTO> teacherDTOs = teacherService.getAllTeachersBySchoolId(schoolId);
+        return ResponseEntity.ok(teacherDTOs);
+    }
+
+    @PutMapping("/{teacherId}")
+    public ResponseEntity<String> updateTeacher(@PathVariable Long schoolId,
+                                                @PathVariable Long teacherId,
+                                                    @RequestBody UpdateTeacherDTO updateTeacherDTO) {
+        teacherService.updateTeacher(schoolId, teacherId, updateTeacherDTO);
+        return ResponseEntity.ok(
+                "Teacher in school id: "
+                        + schoolId
+                        + " with id: "
+                        + teacherId
+                        + " updated successfully!"
+        );
+    }
+
+    @DeleteMapping("/{teacherId}")
+    public ResponseEntity<String> deleteTeacher(@PathVariable Long schoolId,
+                                                @PathVariable Long teacherId) {
+        teacherService.deleteTeacher(schoolId, teacherId);
+        return ResponseEntity.ok("Teacher has been deleted successfully!");
+    }
+
+
 }

@@ -7,14 +7,13 @@ import com.nbu.schoolbook.program.dto.UpdateProgramDTO;
 import java.util.List;
 
 public interface ProgramService {
-    ProgramDTO createProgram(Long schoolId, Long classId, CreateProgramDTO createProgramDTO);
-    ProgramDTO getProgramById(Long id);
-    List<ProgramDTO> getAllPrograms();
+    void createProgram(Long schoolId, Long classId, CreateProgramDTO createProgramDTO);
+    //ProgramDTO getProgramById(Long id);
     ProgramDTO getClassProgram(Long schoolId, Long classId);
-    ProgramDTO getClassProgramByStudentId(Long schoolId, Long studentId);
     List<ProgramDTO> getAllProgramsBySchoolId(Long schoolId);
-    ProgramDTO updateProgram(Long id, UpdateProgramDTO updateProgramDTO);
-    void deleteProgram(Long id);
+    ProgramDTO getClassProgramByStudentId(Long schoolId, Long studentId);
+    void updateProgram(Long schoolId, Long classId, Long programId, UpdateProgramDTO updateProgramDTO);
+    void deleteProgram(Long schoolId, Long classId, Long programId);
 
 
 }

@@ -12,10 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProgramRepository extends JpaRepository<ProgramEntity, Long> {
-    Optional<Object> findAllByAssociatedClassIn(List<ClassEntity> classes);
-    @Query("SELECT p FROM ProgramEntity p JOIN p.associatedClass c WHERE c.school.id = :schoolId AND c.id = :classId")
-    Optional<ProgramEntity> findBySchoolIdAndClassId(@Param("schoolId") Long schoolId, @Param("classId") Long classId);
-
-    @Query("SELECT p FROM ProgramEntity p JOIN p.associatedClass c JOIN c.students s WHERE s.id = :studentId AND c.school.id = :schoolId")
-    Optional<ProgramEntity> findBySchoolIdAndStudentId(@Param("schoolId") Long schoolId, @Param("studentId") Long studentId);
+    Optional<ProgramEntity> findByAssociatedClassSchoolIdAndAssociatedClassId(Long schoolId, Long classId);
+    List<ProgramEntity> findAllByAssociatedClassSchoolId(Long schoolId);
+    List<ProgramEntity> findAllByAssociatedClass(ClassEntity classEntity);
+    Optional<ProgramEntity> findByAssociatedClassSchoolIdAndAssociatedClassStudentsId(Long schoolId, Long studentId);
+    Optional<ProgramEntity> findByIdAndAssociatedClassSchoolIdAndAssociatedClassId(Long programId, Long schoolId, Long classId);
 }

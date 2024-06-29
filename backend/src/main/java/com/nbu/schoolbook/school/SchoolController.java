@@ -10,6 +10,7 @@ import com.nbu.schoolbook.program.dto.CreateProgramDTO;
 import com.nbu.schoolbook.program.dto.ProgramDTO;
 import com.nbu.schoolbook.school.dto.CreateSchoolDTO;
 import com.nbu.schoolbook.school.dto.SchoolDTO;
+import com.nbu.schoolbook.school.dto.UpdateSchoolDTO;
 import com.nbu.schoolbook.user.director.dto.CreateDirectorDTO;
 import com.nbu.schoolbook.user.director.dto.DirectorDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
@@ -29,6 +30,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/school")
 public class SchoolController {
 
@@ -36,38 +38,35 @@ public class SchoolController {
     private final ProgramService programService;
     private final ClassService classService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public ResponseEntity<SchoolDTO> createSchool(@RequestBody CreateSchoolDTO createSchoolDTO) {
-        SchoolDTO schoolDTO = schoolService.createSchool(createSchoolDTO);
+    @PostMapping("/create")
+    public ResponseEntity<String> createSchool(@RequestBody CreateSchoolDTO createSchoolDTO) {
+        schoolService.createSchool(createSchoolDTO);
+        return ResponseEntity.ok("School with name: " + createSchoolDTO.getName() + " created successfully");
+    }
+
+    @GetMapping("/{schoolId}")
+    public ResponseEntity<SchoolDTO> getSchoolById(@PathVariable("schoolId") Long schoolId) {
+        SchoolDTO schoolDTO = schoolService.getSchoolById(schoolId);
         return ResponseEntity.ok(schoolDTO);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SchoolDTO> getSchoolById(@PathVariable("id") Long id) {
-        SchoolDTO schoolDTO = schoolService.getSchoolById(id);
-        return ResponseEntity.ok(schoolDTO);
-    }
-
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<SchoolDTO>> getAllSchools() {
         List<SchoolDTO> schoolDTOs = schoolService.getAllSchools();
         return ResponseEntity.ok(schoolDTOs);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<SchoolDTO> updateSchool(@PathVariable("id") Long id, @RequestBody SchoolDTO schoolDTO) {
-        SchoolDTO updatedSchool = schoolService.updateSchool(id, schoolDTO);
-        return ResponseEntity.ok(updatedSchool);
+    @PutMapping("/{schoolId}")
+    public ResponseEntity<String> updateSchool(@PathVariable("schoolId") Long schoolId, @RequestBody UpdateSchoolDTO updateSchoolDTO) {
+        schoolService.updateSchool(schoolId, updateSchoolDTO);
+        return ResponseEntity.ok("School with id: " + schoolId + " updated successfully!");
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSchool(@PathVariable("id") Long id) {
+    @DeleteMapping("/{schoolId}")
+    public ResponseEntity<String> deleteSchool(@PathVariable("schoolId") Long id) {
         try{
              schoolService.deleteSchool(id);
-             return ResponseEntity.noContent().build();
+             return ResponseEntity.ok("School with id: " + id + " deleted successfully");
         } catch (ResourceNotFoundException e){
             return ResponseEntity.notFound().build();
         }
@@ -100,12 +99,12 @@ public class SchoolController {
 //        return ResponseEntity.ok(directorDTO);
 //    }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{schoolId}/add-class")
-    public ResponseEntity<ClassDTO> addClass(@PathVariable Long schoolId, @RequestBody CreateClassDTO createClassDTO) {
-        ClassDTO classDTO = schoolService.addClass(schoolId, createClassDTO);
-        return ResponseEntity.ok(classDTO);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/{schoolId}/add-class")
+//    public ResponseEntity<ClassDTO> addClass(@PathVariable Long schoolId, @RequestBody CreateClassDTO createClassDTO) {
+//        ClassDTO classDTO = schoolService.addClass(schoolId, createClassDTO);
+//        return ResponseEntity.ok(classDTO);
+//    }
 
 //    @GetMapping("/{schoolId}/classes")
 //    public ResponseEntity<List<ClassDTO>> getAllClassesBySchoolId(@PathVariable Long schoolId) {
@@ -131,15 +130,15 @@ public class SchoolController {
         return ResponseEntity.ok("Student unenrolled successfully");
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{schoolId}/classes/{classId}/program")
-    public ResponseEntity<ProgramDTO> createProgram(
-            @PathVariable Long schoolId,
-            @PathVariable Long classId,
-            @RequestBody CreateProgramDTO createProgramDTO) {
-        ProgramDTO programDTO = programService.createProgram(schoolId, classId, createProgramDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(programDTO);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/{schoolId}/classes/{classId}/program")
+//    public ResponseEntity<ProgramDTO> createProgram(
+//            @PathVariable Long schoolId,
+//            @PathVariable Long classId,
+//            @RequestBody CreateProgramDTO createProgramDTO) {
+//        ProgramDTO programDTO = programService.createProgram(schoolId, classId, createProgramDTO);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(programDTO);
+//    }
 
     @GetMapping("/{schoolId}/classes/{classId}/program")
     public ResponseEntity<ProgramDTO> getProgramBySchoolAndClassId(@PathVariable Long schoolId, @PathVariable Long classId) {

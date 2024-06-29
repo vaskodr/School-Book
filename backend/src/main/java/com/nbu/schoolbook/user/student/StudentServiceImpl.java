@@ -39,55 +39,57 @@ public class StudentServiceImpl implements StudentService {
     private final ParentRepository parentRepository;
 
     @Override
-    public StudentDTO registerStudent(RegisterDTO registerDTO, Long classId) {
-        ClassEntity studentClass = getClassEntity(classId);
+    public void registerStudent(RegisterDTO registerDTO, Long schoolId, Long classId) {
+        ClassEntity studentClass = getClassEntityForSchool(schoolId, classId);
         UserEntity user = getUser(registerDTO, "ROLE_STUDENT");
 
         StudentEntity student = createStudentEntity(user, studentClass);
         studentClass.getStudents().add(student);
         classRepository.save(studentClass);
         handleParentAssociation(registerDTO, student);
-
-        return studentMapper.mapToDTO(student);
     }
 
     @Override
-    public StudentDTO getStudentById(Long id) {
-        StudentEntity studentEntity = studentRepository.findById(id)
+    public StudentDTO getStudentById(Long schoolId, Long classId, String userId) {
+        StudentEntity studentEntity = studentRepository.findByUserEntityIdAndStudentClassIdAndStudentClassSchoolId(userId, classId, schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         StudentDTO studentDTO = studentMapper.mapToDTO(studentEntity);
-
-        // Map firstName and lastName from UserEntity
         studentDTO.setFirstName(studentEntity.getUserEntity().getFirstName());
         studentDTO.setLastName(studentEntity.getUserEntity().getLastName());
         return studentDTO;
     }
 
     @Override
-    public List<StudentDTO> getAllStudents() {
-        return studentRepository.findAll().stream()
+    public List<StudentDTO> getAllStudents(Long schoolId, Long classId) {
+        List<StudentEntity> students = studentRepository.findAllByStudentClassSchoolIdAndStudentClassId(schoolId, classId);
+        return students.stream()
                 .map(studentMapper::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public StudentDTO updateStudent(Long id, UpdateStudentDTO updateStudentDTO) {
-        StudentEntity studentEntity = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+    @Transactional
+    public void updateStudent(Long schoolId, Long classId, Long studentId, UpdateStudentDTO updateStudentDTO) {
+        StudentEntity studentEntity = studentRepository.findByIdAndStudentClassSchoolIdAndStudentClassId(studentId, schoolId, classId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found in the specified school and class"));
 
         updateUserEntity(studentEntity.getUserEntity(), updateStudentDTO);
         userRepository.save(studentEntity.getUserEntity());
-
-        return studentMapper.mapToDTO(studentEntity);
     }
 
     @Override
-    public void deleteStudent(Long id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Student not found");
+    @Transactional
+    public void deleteStudent(Long schoolId, Long classId, Long studentId) {
+        boolean exists = studentRepository.existsByIdAndStudentClassSchoolIdAndStudentClassId(studentId, schoolId, classId);
+        if (!exists) {
+            throw new ResourceNotFoundException("Student not found in the specified school and class");
         }
-        studentRepository.deleteById(id);
+        StudentEntity studentEntity = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        studentRepository.deleteById(studentId);
+        userRepository.deleteById(studentEntity.getUserEntity().getId());
     }
 
     @Transactional
@@ -96,11 +98,14 @@ public class StudentServiceImpl implements StudentService {
         ClassEntity classEntity = getClassEntity(classId);
         StudentEntity studentEntity = getStudentEntity(studentId);
 
-        classEntity.getStudents().add(studentEntity);
-        studentEntity.setStudentClass(classEntity);
-
-        classRepository.save(classEntity);
-        studentRepository.save(studentEntity);
+        if (studentEntity.getStudentClass() == null) {
+            classEntity.getStudents().add(studentEntity);
+            studentEntity.setStudentClass(classEntity);
+            classRepository.save(classEntity);
+            studentRepository.save(studentEntity);
+        } else {
+            throw new RuntimeException("Student has been already assigned to a class!");
+        }
     }
 
     @Transactional
@@ -109,11 +114,38 @@ public class StudentServiceImpl implements StudentService {
         ClassEntity classEntity = getClassEntity(classId);
         StudentEntity studentEntity = getStudentEntity(studentId);
 
-        classEntity.getStudents().remove(studentEntity);
-        studentEntity.setStudentClass(null);
+        if (studentEntity.getStudentClass() != null) {
+            classEntity.getStudents().remove(studentEntity);
+            studentEntity.setStudentClass(null);
 
-        classRepository.save(classEntity);
-        studentRepository.save(studentEntity);
+            classRepository.save(classEntity);
+            studentRepository.save(studentEntity);
+        } else {
+            throw new RuntimeException("Student is not in a class yet!");
+        }
+    }
+
+    public StudentClassDTO getStudentByUserId(String userId) {
+        StudentEntity studentEntity = studentRepository.findByUserEntityId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user id: " + userId));
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
+        StudentClassDTO studentDTO = new StudentClassDTO();
+        studentDTO.setId(studentEntity.getId());
+        ClassDTO classDTO = getClassByStudentId(studentEntity.getId());
+        studentDTO.setClassDTO(classDTO);
+        return studentDTO;
+    }
+
+    public ClassDTO getClassByStudentId(Long studentId) {
+        StudentEntity studentEntity = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+        ClassEntity classEntity = studentEntity.getStudentClass();
+        ClassDTO classDTO = new ClassDTO();
+        classDTO.setId(classEntity.getId());
+        classDTO.setName(classEntity.getName());
+        classDTO.setLevel(classEntity.getLevel());
+
+        return classDTO;
     }
 
 
@@ -169,6 +201,7 @@ public class StudentServiceImpl implements StudentService {
                 parent.getStudents().add(student);
             } else {
                 UserEntity parentUser = userMapper.mapRegisterDTOToEntity(parentDTO);
+                parentUser.setPassword(passwordEncoder.encode(parentDTO.getPassword())); // Encode the password
                 RoleEntity parentRole = roleRepository.findByName("ROLE_PARENT");
                 if (parentRole == null) {
                     throw new RuntimeException("Parent role not found!");
@@ -200,32 +233,16 @@ public class StudentServiceImpl implements StudentService {
             userEntity.setPassword(passwordEncoder.encode(updateStudentDTO.getPassword()));
     }
 
+
+
+    private ClassEntity getClassEntityForSchool(Long schoolId, Long classId) {
+        return classRepository.findByIdAndSchoolId(classId, schoolId)
+                .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
+    }
+
     private StudentEntity getStudentEntity(Long studentId) {
         return studentRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-    }
-
-    public StudentClassDTO getStudentByUserId(String userId) {
-        StudentEntity studentEntity = studentRepository.findByUserEntityId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user id: " + userId));
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
-        StudentClassDTO studentDTO = new StudentClassDTO();
-        studentDTO.setId(studentEntity.getId());
-        ClassDTO classDTO = getClassByStudentId(studentEntity.getId());
-        studentDTO.setClassDTO(classDTO);
-        return studentDTO;
-    }
-
-    public ClassDTO getClassByStudentId(Long studentId) {
-        StudentEntity studentEntity = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
-        ClassEntity classEntity = studentEntity.getStudentClass();
-        ClassDTO classDTO = new ClassDTO();
-        classDTO.setId(classEntity.getId());
-        classDTO.setName(classEntity.getName());
-        classDTO.setLevel(classEntity.getLevel());
-
-        return classDTO;
     }
 }
 

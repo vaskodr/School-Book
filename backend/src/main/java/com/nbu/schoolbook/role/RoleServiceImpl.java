@@ -18,11 +18,10 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
-    public RoleDTO createRole(CreateRoleDTO createRoleDTO) {
+    public void createRole(CreateRoleDTO createRoleDTO) {
         RoleEntity role = new RoleEntity();
         role.setName("ROLE_" + createRoleDTO.getName());
         roleRepository.save(role);
-        return roleMapper.mapToDTO(role);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO updateRole(Long id, UpdateRoleDTO updateRoleDTO) {
+    public void updateRole(Long id, UpdateRoleDTO updateRoleDTO) {
         RoleEntity role = roleRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -56,7 +55,6 @@ public class RoleServiceImpl implements RoleService {
         role.setName("ROLE_" + updateRoleDTO.getName());
 
         role = roleRepository.save(role);
-        return roleMapper.mapToDTO(role);
     }
 
     @Override

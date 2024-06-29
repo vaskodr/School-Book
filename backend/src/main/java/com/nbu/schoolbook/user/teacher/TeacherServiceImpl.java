@@ -60,37 +60,48 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public TeacherDTO getTeacherById(Long id) {
-        TeacherEntity teacherEntity = teacherRepository.findById(id)
+    public TeacherDTO getTeacherById(Long schoolId, Long teacherId) {
+        TeacherEntity teacherEntity = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+
+        if (!teacherEntity.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Teacher not found in the specified school");
+        }
+
         return teacherMapper.mapEntityToDTO(teacherEntity);
     }
 
     @Override
-    public List<TeacherDTO> getAllTeachers() {
-        List<TeacherEntity> teachers = teacherRepository.findAll();
+    public List<TeacherDTO> getAllTeachersBySchoolId(Long schoolId) {
+        List<TeacherEntity> teachers = teacherRepository.findBySchoolId(schoolId);
         return teachers.stream()
                 .map(teacherMapper::mapEntityToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public TeacherDTO updateTeacher(Long id, UpdateTeacherDTO updateTeacherDTO) {
-        TeacherEntity teacherEntity = teacherRepository.findById(id)
+    public void updateTeacher(Long schoolId, Long teacherId, UpdateTeacherDTO updateTeacherDTO) {
+        TeacherEntity teacherEntity = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+
+        if (!teacherEntity.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Teacher not found in the specified school");
+        }
 
         updateUserEntity(teacherEntity.getUserEntity(), updateTeacherDTO);
         userRepository.save(teacherEntity.getUserEntity());
-
-        return teacherMapper.mapEntityToDTO(teacherEntity);
     }
 
     @Override
-    public void deleteTeacher(Long id) {
-        if (!teacherRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Teacher not found");
+    public void deleteTeacher(Long schoolId, Long teacherId) {
+        TeacherEntity teacherEntity = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+
+        if (!teacherEntity.getSchool().getId().equals(schoolId)) {
+            throw new ResourceNotFoundException("Teacher not found in the specified school");
         }
-        teacherRepository.deleteById(id);
+
+        teacherRepository.deleteById(teacherId);
     }
 
 

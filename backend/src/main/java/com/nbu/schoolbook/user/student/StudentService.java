@@ -7,11 +7,11 @@ import com.nbu.schoolbook.user.student.dto.*;
 import java.util.List;
 
 public interface StudentService {
-    StudentDTO registerStudent(RegisterDTO registerDTO, Long classId);
-    StudentDTO getStudentById(Long id);
-    List<StudentDTO> getAllStudents();
-    StudentDTO updateStudent(Long id, UpdateStudentDTO updateStudentDTO);
-    void deleteStudent(Long id);
+    void registerStudent(RegisterDTO registerDTO, Long schoolId, Long classId);
+    StudentDTO getStudentById(Long schoolId, Long classId, String userId);
+    List<StudentDTO> getAllStudents(Long schoolId, Long classId);
+    void updateStudent(Long schoolId, Long classId, Long studentId, UpdateStudentDTO updateStudentDTO);
+    void deleteStudent(Long schoolId, Long classId, Long studentId);
 
 
 
