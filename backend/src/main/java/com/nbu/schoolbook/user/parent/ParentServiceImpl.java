@@ -9,6 +9,8 @@ import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.parent.dto.CreateParentDTO;
 import com.nbu.schoolbook.user.parent.dto.ParentDTO;
 import com.nbu.schoolbook.user.parent.dto.UpdateParentDTO;
+import com.nbu.schoolbook.user.student.StudentMapper;
+import com.nbu.schoolbook.user.student.dto.StudentDTO;
 import lombok.AllArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,7 @@ public class ParentServiceImpl implements ParentService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final StudentMapper studentMapper;
 
     @Override
     public ParentDTO createParent(RegisterDTO registerDTO) {
@@ -79,6 +82,16 @@ public class ParentServiceImpl implements ParentService {
         ParentEntity parentEntity = parentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
         parentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<StudentDTO> getParentChildren(Long parentId) {
+        ParentEntity parentEntity = parentRepository.findById(parentId).orElseThrow(
+                () -> new RuntimeException("Parent not found!")
+        );
+        return parentEntity.getStudents().stream()
+                .map(studentMapper::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

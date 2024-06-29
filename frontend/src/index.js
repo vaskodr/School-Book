@@ -11,6 +11,11 @@ import TeacherDashboard from "./Dashboard/TeacherDashboard";
 import App from './App';
 import PrivateRoute from './Auth/PrivateRoute';
 import Layout from './UI/Layout'
+import CreateSchool from "./School/CreateSchool";
+import EditSchool from "./School/UpdateSchool";
+import CreateClass from "./Class/CreateClass";
+import UpdateClass from "./Class/UpdateClass";
+import SchoolTeachers from "./School/SchoolTeachers";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -43,10 +48,58 @@ root.render(
                             }
                         />
                         <Route
+                            path="/admin/dashboard/school/:schoolId/class/:classId"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <ClassDetails />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/:schoolId/class/create"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <CreateClass />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/:schoolId/class/:classId/update"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <UpdateClass />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/:schoolId/teachers"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <SchoolTeachers />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
                             path="/admin/dashboard/school/:schoolId/classes"
                             element={
                                 <PrivateRoute roles={['ROLE_ADMIN']}>
                                     <SchoolClasses />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/create"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <CreateSchool />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/:schoolId/update"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <EditSchool />
                                 </PrivateRoute>
                             }
                         />

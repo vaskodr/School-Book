@@ -24,7 +24,7 @@ public interface SchoolService {
 //    DirectorDTO addDirector(RegisterDTO registerDTO, Long schoolId);
     // boolean addParent();
 //    ClassDTO addClass(Long schoolId, CreateClassDTO createClassDTO);
-    List<ClassDTO> getClassesBySchoolId(Long schoolId);
+    //List<ClassDTO> getClassesBySchoolId(Long schoolId);
 
     void enrollStudentToClass(Long schoolId, Long classId, Long studentId);
     void unenrollStudentFromClass(Long schoolId, Long classId, Long studentId);

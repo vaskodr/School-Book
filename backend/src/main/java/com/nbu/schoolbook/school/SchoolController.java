@@ -156,16 +156,16 @@ public class SchoolController {
         return ResponseEntity.ok(programDTO);
     }
 
-    @GetMapping("/{schoolId}/classes")
-    public ResponseEntity<List<ClassDTO>> getAllClassesBySchoolId(@PathVariable Long schoolId) {
-        List<ClassDTO> classDTOs = classService.getAllClassesBySchoolId(schoolId);
-        return ResponseEntity.ok(classDTOs);
-    }
-    @GetMapping("/{schoolId}/classes/{classId}")
-    public ResponseEntity<ClassDetailsDTO> getClassBySchoolIdAndClassId(@PathVariable Long schoolId, @PathVariable Long classId) {
-        ClassDetailsDTO classDetailsDTO = classService.getClassBySchoolIdAndClassId(schoolId, classId);
-        return ResponseEntity.ok(classDetailsDTO);
-    }
+//    @GetMapping("/{schoolId}/classes")
+//    public ResponseEntity<List<ClassDTO>> getAllClassesBySchoolId(@PathVariable Long schoolId) {
+//        List<ClassDTO> classDTOs = classService.getAllClassesBySchoolId(schoolId);
+//        return ResponseEntity.ok(classDTOs);
+//    }
+//    @GetMapping("/{schoolId}/classes/{classId}")
+//    public ResponseEntity<ClassDetailsDTO> getClassBySchoolIdAndClassId(@PathVariable Long schoolId, @PathVariable Long classId) {
+//        ClassDetailsDTO classDetailsDTO = classService.getClassBySchoolIdAndClassId(schoolId, classId);
+//        return ResponseEntity.ok(classDetailsDTO);
+//    }
 
 
 

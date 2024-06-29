@@ -25,7 +25,7 @@ const SchoolList = () => {
 
     const fetchClasses = async (schoolId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes`);
+            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/all`);
             if (response.ok) {
                 const data = await response.json();
                 setClasses(data);

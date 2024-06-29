@@ -20,32 +20,51 @@ public class ClassController {
     private final ClassService classService;
 
     @PostMapping("/add-class")
-    public ResponseEntity<ClassDTO> addClass(@PathVariable Long schoolId, @RequestBody CreateClassDTO createClassDTO) {
-        ClassDTO classDTO = classService.createClass(schoolId, createClassDTO);
-        return ResponseEntity.ok(classDTO);
+    public ResponseEntity<String> addClass(@PathVariable Long schoolId, @RequestBody CreateClassDTO createClassDTO) {
+        classService.createClass(schoolId, createClassDTO);
+        return ResponseEntity.ok(
+                "Class with name: "
+                + createClassDTO.getName()
+                + " and level: "
+                + createClassDTO.getLevel()
+                + " created and added successfully to school id: "
+                + schoolId
+        );
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ClassDTO> getClassById(@PathVariable Long id) {
-//        ClassDTO classDTO = classService.getClassById(id);
-//        return new ResponseEntity<>(classDTO, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/all")
-//    public ResponseEntity<List<ClassDTO>> getAllClasses() {
-//        List<ClassDTO> classes = classService.getAllClasses();
-//        return new ResponseEntity<>(classes, HttpStatus.OK);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<ClassDTO> updateClass(@PathVariable Long id, @RequestBody UpdateClassDTO updateClassDTO) {
-//        ClassDTO classDTO = classService.updateClass(id, updateClassDTO);
-//        return new ResponseEntity<>(classDTO, HttpStatus.OK);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteClass(@PathVariable Long id) {
-//        classService.deleteClass(id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @GetMapping("/{classId}")
+    public ResponseEntity<ClassDTO> getClassById(@PathVariable Long schoolId,
+                                                 @PathVariable Long classId) {
+        ClassDTO classDTO = classService.getClassById(schoolId, classId);
+        return new ResponseEntity<>(classDTO, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ClassDTO>> getAllClasses(@PathVariable Long schoolId) {
+        List<ClassDTO> classes = classService.getAllClasses(schoolId);
+        return new ResponseEntity<>(classes, HttpStatus.OK);
+    }
+
+    @PutMapping("/{classId}")
+    public ResponseEntity<String> updateClass(@PathVariable Long schoolId,
+                                                @PathVariable Long classId,
+                                                @RequestBody UpdateClassDTO updateClassDTO) {
+        classService.updateClass(schoolId, classId, updateClassDTO);
+        return ResponseEntity.ok(
+                "Class with id: "
+                        + classId
+                        + " in school id: "
+                        + schoolId
+                        + " updated successfully!"
+        );
+
+    }
+
+    @DeleteMapping("/{classId}")
+    public ResponseEntity<String> deleteClass(@PathVariable Long schoolId,
+                                            @PathVariable Long classId) {
+        classService.deleteClass(schoolId, classId);
+        return ResponseEntity.ok("Class deleted successfully!");
+    }
 }

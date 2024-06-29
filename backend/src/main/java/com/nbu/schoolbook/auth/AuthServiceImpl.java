@@ -9,6 +9,7 @@ import com.nbu.schoolbook.role.RoleRepository;
 import com.nbu.schoolbook.security.JwtTokenProvider;
 import com.nbu.schoolbook.user.UserService;
 import com.nbu.schoolbook.user.director.DirectorRepository;
+import com.nbu.schoolbook.user.dto.AdminRegistrationDTO;
 import com.nbu.schoolbook.user.dto.LoginDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.UserEntity;
@@ -36,6 +37,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.Role;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -123,50 +125,33 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String register(RegisterDTO registerDTO) throws APIException {
-        if (userRepository.existsByUsername(registerDTO.getUsername())) {
+    public String register(AdminRegistrationDTO adminRegistrationDTO) throws APIException {
+        if (userRepository.existsByUsername(adminRegistrationDTO.getUsername())) {
             throw new APIException("Username already exists!");
         }
-        if (userRepository.existsByEmail(registerDTO.getEmail())) {
+        if (userRepository.existsByEmail(adminRegistrationDTO.getEmail())) {
             throw new APIException("Email already exists!");
         }
 
         Set<RoleEntity> roles = new HashSet<>();
-//        for (String roleName : registerDTO.getRoles()) {
-//            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase())
-//                    .orElseThrow(() -> new APIException("Role not found!"));
-//            roles.add(role);
-//        }
+        for (String roleName : adminRegistrationDTO.getRoles()) {
+            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase());
+            roles.add(role);
+        }
 
         UserEntity user = new UserEntity();
-        user.setFirstName(registerDTO.getFirstName());
-        user.setLastName(registerDTO.getLastName());
-        user.setDateOfBirth(registerDTO.getDateOfBirth());
-        user.setGender(Gender.valueOf(registerDTO.getGender()));
-        user.setPhone(registerDTO.getPhone());
-        user.setEmail(registerDTO.getEmail());
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setId(adminRegistrationDTO.getId());
+        user.setFirstName(adminRegistrationDTO.getFirstName());
+        user.setLastName(adminRegistrationDTO.getLastName());
+        user.setDateOfBirth(adminRegistrationDTO.getDateOfBirth());
+        user.setGender(Gender.valueOf(adminRegistrationDTO.getGender()));
+        user.setPhone(adminRegistrationDTO.getPhone());
+        user.setEmail(adminRegistrationDTO.getEmail());
+        user.setUsername(adminRegistrationDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(adminRegistrationDTO.getPassword()));
         user.setRoles(roles);
 
-        UserEntity savedUser = userRepository.save(user);
-
-        for (RoleEntity role : roles) {
-            String roleName = role.getName().toUpperCase();
-            if (roleName.equals("ROLE_TEACHER")) {
-                TeacherEntity teacher = new TeacherEntity();
-                teacher.setUserEntity(savedUser);
-                teacherRepository.save(teacher);
-            } else if (roleName.equals("ROLE_DIRECTOR")) {
-                DirectorEntity director = new DirectorEntity();
-                director.setUserEntity(savedUser);
-                directorRepository.save(director);
-            } else if (roleName.equals("ROLE_STUDENT")) {
-                StudentEntity student = new StudentEntity();
-                student.setUserEntity(savedUser);
-                studentRepository.save(student);
-            }
-        }
+        userRepository.save(user);
 
         return "User registered successfully!";
     }

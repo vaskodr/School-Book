@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
 
 const ClassDetails = () => {
     const { schoolId, classId } = useParams();
-    const [classDetails, setClassDetails] = useState(null);
+    const [classDetails, setClassDetails] = useState({});
     const { authData } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClassDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/${classId}`, {
+                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/class/${classId}`, {
                     headers: {
                         Authorization: `Bearer ${authData.accessToken}`,
                     },
@@ -31,16 +32,12 @@ const ClassDetails = () => {
 
     return (
         <div>
-            <h2>Class Details</h2>
-            {classDetails ? (
-                <div>
-                    <h3>{classDetails.name}</h3>
-                    <p>Level: {classDetails.level}</p>
-                    {/* Add more class details here */}
-                </div>
-            ) : (
-                <p>Loading class details...</p>
-            )}
+            <h2>Class Details for {classDetails.name}</h2>
+            <p>ID: {classDetails.id}</p>
+            <p>Name: {classDetails.name}</p>
+            <p>Level: {classDetails.level}</p>
+            {/* Add more details as needed */}
+            <button onClick={() => navigate(-1)}>Back to Classes</button>
         </div>
     );
 };

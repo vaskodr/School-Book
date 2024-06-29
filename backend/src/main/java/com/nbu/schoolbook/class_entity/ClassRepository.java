@@ -8,11 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClassRepository extends JpaRepository<ClassEntity, Long> {
-    List<ClassEntity> findBySchool(SchoolEntity school);
-
-    List<ClassEntity> findClassesBySchoolId(Long schoolId);
-
-    Optional<ClassEntity> findByIdAndSchoolId(Long classId, Long schoolId);
-
+    Optional<ClassEntity> findByIdAndSchoolId(Long schoolId, Long classId);
     List<ClassEntity> findBySchoolId(Long schoolId);
 }

@@ -10,15 +10,9 @@ import java.util.List;
 
 public interface ClassService {
     //ClassDTO createClass(CreateClassDTO createClassDTO);
-    ClassDTO createClass(Long schoolId, CreateClassDTO createClassDTO);
-    ClassDTO getClassById(Long id);
-    List<ClassDTO> getAllClasses();
-    ClassDTO updateClass(Long id, UpdateClassDTO updateClassDTO);
-    void deleteClass(Long id);
-
-
-
-    ClassEntity getClassIfProvided(RegisterDTO registerDTO);
-    List<ClassDTO> getAllClassesBySchoolId(Long schoolId);
-    ClassDetailsDTO getClassBySchoolIdAndClassId(Long schoolId, Long classId);
+    void createClass(Long schoolId, CreateClassDTO createClassDTO);
+    ClassDTO getClassById(Long schoolId, Long classId);
+    List<ClassDTO> getAllClasses(Long schoolId);
+    void updateClass(Long schoolId, Long classId, UpdateClassDTO updateClassDTO);
+    void deleteClass(Long schoolId, Long classId);
 }

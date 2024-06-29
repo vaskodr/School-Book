@@ -11,7 +11,12 @@ public class ClassMapper {
     private final ModelMapper modelMapper;
 
     public ClassDTO mapToDTO(ClassEntity classEntity) {
-        return modelMapper.map(classEntity, ClassDTO.class);
+        ClassDTO classDTO = new ClassDTO();
+        classDTO.setId(classEntity.getId());
+        classDTO.setName(classEntity.getName());
+        classDTO.setLevel(classEntity.getLevel());
+        classDTO.setSchoolName(classEntity.getSchool().getName());
+        return classDTO;
     }
 
     public ClassEntity mapToEntity(ClassDTO classDTO) {

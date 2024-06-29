@@ -32,7 +32,7 @@ public class ClassServiceImpl implements ClassService{
     private final StudentMapper studentMapper;
 
     @Override
-    public ClassDTO createClass(Long schoolId, CreateClassDTO createClassDTO) {
+    public void createClass(Long schoolId, CreateClassDTO createClassDTO) {
         SchoolEntity school = schoolRepository.findById(schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
@@ -41,35 +41,33 @@ public class ClassServiceImpl implements ClassService{
         newClass.setLevel(createClassDTO.getLevel());
         newClass.setSchool(school);
 
-
-        ClassEntity savedClass = classRepository.save(newClass);
-        return classMapper.mapToDTO(savedClass);
+        classRepository.save(newClass);
     }
 
     @Override
-    public ClassDTO getClassById(Long id) {
-        ClassEntity classEntity = classRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
+    public ClassDTO getClassById(Long schoolId, Long classId) {
+        ClassEntity classEntity = classRepository.findByIdAndSchoolId(schoolId, classId)
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found for the specified school"));
         return classMapper.mapToDTO(classEntity);
     }
 
     @Override
-    public List<ClassDTO> getAllClasses() {
-        List<ClassEntity> classes = classRepository.findAll();
+    public List<ClassDTO> getAllClasses(Long schoolId) {
+        List<ClassEntity> classes = classRepository.findBySchoolId(schoolId);
         return classes.stream()
-                .map(cls -> classMapper.mapToDTO(cls))
+                .map(classMapper::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ClassDTO updateClass(Long id, UpdateClassDTO updateClassDTO) {
-        ClassEntity classEntity = classRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
+    public void updateClass(Long schoolId, Long classId, UpdateClassDTO updateClassDTO) {
+        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found for the given school"));
 
         classEntity.setName(updateClassDTO.getName());
         classEntity.setLevel(updateClassDTO.getLevel());
 
-        SchoolEntity school = schoolRepository.findById(updateClassDTO.getSchoolId())
+        SchoolEntity school = schoolRepository.findById(schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
         classEntity.setSchool(school);
 
@@ -83,59 +81,29 @@ public class ClassServiceImpl implements ClassService{
                 .collect(Collectors.toSet());
         classEntity.setStudents(students);
 
-        ClassEntity updatedClass = classRepository.save(classEntity);
-        return classMapper.mapToDTO(updatedClass);
+        classRepository.save(classEntity);
     }
 
     @Override
-    public void deleteClass(Long id) {
-        if (!classRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Class not found");
-        }
-        classRepository.deleteById(id);
+    public void deleteClass(Long schoolId, Long classId) {
+        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found for the given school"));
+
+        classRepository.deleteById(classId);
     }
 
-    @Override
-    public ClassEntity getClassIfProvided(RegisterDTO registerDTO) {
-        if (registerDTO.getClassId() != null) {
-            ClassEntity mentorClass = classRepository.findById(registerDTO.getClassId())
-                    .orElseThrow(() -> new RuntimeException("Class not found!"));
+//    @Override
+//    public ClassEntity getClassIfProvided(RegisterDTO registerDTO) {
+//        if (registerDTO.getClassId() != null) {
+//            ClassEntity mentorClass = classRepository.findById(registerDTO.getClassId())
+//                    .orElseThrow(() -> new RuntimeException("Class not found!"));
+//
+//            if (mentorClass.getMentor() != null) {
+//                throw new RuntimeException("Class already has a mentor!");
+//            }
+//            return mentorClass;
+//        }
+//        return null;
+//    }
 
-            if (mentorClass.getMentor() != null) {
-                throw new RuntimeException("Class already has a mentor!");
-            }
-            return mentorClass;
-        }
-        return null;
-    }
-
-    public List<ClassDTO> getAllClassesBySchoolId(Long schoolId) {
-        List<ClassEntity> classEntities = classRepository.findBySchoolId(schoolId);
-        return classEntities.stream()
-                .map(classMapper::mapToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public ClassDetailsDTO getClassBySchoolIdAndClassId(Long schoolId, Long classId) {
-        ClassEntity classEntity = classRepository.findByIdAndSchoolId(schoolId, classId)
-                .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
-
-        ClassDetailsDTO classDetailsDTO = new ClassDetailsDTO();
-        classDetailsDTO.setId(classEntity.getId());
-        classDetailsDTO.setName(classEntity.getName());
-        classDetailsDTO.setLevel(classEntity.getLevel());
-
-        classDetailsDTO.setMentorName(
-                classEntity.getMentor().getUserEntity().getFirstName()
-                + " " +
-                classEntity.getMentor().getUserEntity().getLastName()
-        );
-
-        List<StudentDetailsDTO> students = classEntity.getStudents().stream()
-                .map(studentMapper::mapToDetailsDTO)
-                .toList();
-        classDetailsDTO.setStudentDetailsDTOS(students);
-
-        return classDetailsDTO;
-    }
 }

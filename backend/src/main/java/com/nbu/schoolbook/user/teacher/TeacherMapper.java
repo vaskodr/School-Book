@@ -1,6 +1,11 @@
 package com.nbu.schoolbook.user.teacher;
 
+import com.nbu.schoolbook.class_entity.ClassEntity;
+import com.nbu.schoolbook.class_entity.ClassRepository;
+import com.nbu.schoolbook.class_entity.dto.ClassDTO;
 import com.nbu.schoolbook.subject.SubjectEntity;
+import com.nbu.schoolbook.user.UserEntity;
+import com.nbu.schoolbook.user.UserRepository;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
@@ -16,14 +21,35 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TeacherMapper {
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
+    private final ClassRepository classRepository;
 
     public TeacherDTO mapEntityToDTO(TeacherEntity teacher) {
-        TeacherDTO teacherDTO = modelMapper.map(teacher, TeacherDTO.class);
+        TeacherDTO teacherDTO = new TeacherDTO();
+        teacherDTO.setId(teacher.getId());
+        teacherDTO.setFirstName(teacher.getUserEntity().getFirstName());
+        teacherDTO.setLastName(teacher.getUserEntity().getLastName());
+
         if (teacher.getSubjects() != null) {
-            teacherDTO.setSubjectIds(teacher.getSubjects().stream()
-                    .map(SubjectEntity::getId)
+            teacherDTO.setSubjectNames(teacher.getSubjects().stream()
+                    .map(SubjectEntity::getName)  // Assuming SubjectEntity has a getName() method
                     .collect(Collectors.toList()));
         }
+
+        teacherDTO.setSchoolName(teacher.getSchool().getName());
+        if (teacher.getMentoredClass() != null) {
+            ClassEntity classEntity = classRepository.findById(teacher.getMentoredClass().getId())
+                    .orElseThrow(
+                            () -> new RuntimeException("Class not found!")
+                    );
+            ClassDTO classDTO = modelMapper.map(classEntity, ClassDTO.class);
+
+            teacherDTO.setClassDTO(classDTO);
+        } else {
+            teacherDTO.setClassDTO(null);
+        }
+
+
         return teacherDTO;
     }
 

@@ -130,17 +130,17 @@ public class SchoolServiceImpl implements SchoolService {
 //    }
 
 
-    @Override
-    public List<ClassDTO> getClassesBySchoolId(Long schoolId) {
-        SchoolEntity school = schoolRepository.findById(schoolId)
-                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
-
-        List<ClassEntity> classEntities = classRepository.findBySchool(school);
-
-        return classEntities.stream()
-                .map(classMapper::mapToDTO)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<ClassDTO> getClassesBySchoolId(Long schoolId) {
+//        SchoolEntity school = schoolRepository.findById(schoolId)
+//                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
+//
+//        List<ClassEntity> classEntities = classRepository.findBySchool(school);
+//
+//        return classEntities.stream()
+//                .map(classMapper::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     @Transactional
