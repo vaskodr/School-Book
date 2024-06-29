@@ -109,20 +109,20 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
 
-    @Override
-    public DirectorDTO addDirector(RegisterDTO registerDTO, Long schoolId) {
-        return directorService.registerDirector(registerDTO, schoolId);
-    }
-
-    @Override
-    public TeacherDTO addTeacher(RegisterDTO registerDTO, Long schoolId) {
-        return teacherService.registerTeacher(registerDTO, schoolId);
-    }
-
-    @Override
-    public StudentDTO addStudent(RegisterDTO registerDTO, Long classId) {
-        return studentService.registerStudent(registerDTO, classId);
-    }
+//    @Override
+//    public DirectorDTO addDirector(RegisterDTO registerDTO, Long schoolId) {
+//        return directorService.registerDirector(registerDTO, schoolId);
+//    }
+//
+//    @Override
+//    public TeacherDTO addTeacher(RegisterDTO registerDTO, Long schoolId) {
+//        return teacherService.registerTeacher(registerDTO, schoolId);
+//    }
+//
+//    @Override
+//    public StudentDTO addStudent(RegisterDTO registerDTO, Long classId) {
+//        return studentService.registerStudent(registerDTO, classId);
+//    }
 
 //    @Override
 //    public boolean addParent() {

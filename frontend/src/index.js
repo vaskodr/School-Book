@@ -1,17 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import LoginForm from './Auth/LoginForm';
+import StudentDashboard from './Dashboard/StudentDashboard';
+import AdminDashboard from './Dashboard/AdminDashboard';
+import { AuthProvider } from './Auth/AuthContext';
+import ClassDetails from "./Class/ClassDetails";
+import SchoolClasses from "./School/SchoolClasses";
+import TeacherDashboard from "./Dashboard/TeacherDashboard";
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
+        <AuthProvider>
+             <Router>
+                 <Routes>
+                     <Route path="/" element={<App/>}/>
+                     <Route path="/login" element={<LoginForm />} />
+                     <Route path="/student/dashboard/:schoolId" element={<StudentDashboard />} />
+                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                     <Route path="/teacher/dashboard/:schoolId" element={<TeacherDashboard />} />
+                     <Route path="/admin/dashboard/school/:schoolId/classes" element={<SchoolClasses />} />
+                     <Route path="/admin/dashboard/school/:schoolId/class/:classId" element={<ClassDetails />} />
+                     <Route path="*" element={<Navigate to="/" />} />
+                 </Routes>
+             </Router>
+         </AuthProvider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

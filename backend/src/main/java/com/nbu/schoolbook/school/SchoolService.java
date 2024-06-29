@@ -18,9 +18,9 @@ public interface SchoolService {
     SchoolDTO updateSchool(long id, SchoolDTO updateSchool);
     void deleteSchool(long id);
 
-    TeacherDTO addTeacher(RegisterDTO registerDTO, Long schoolId);
-    StudentDTO addStudent(RegisterDTO registerDTO, Long classId);
-    DirectorDTO addDirector(RegisterDTO registerDTO, Long schoolId);
+//    TeacherDTO addTeacher(RegisterDTO registerDTO, Long schoolId);
+//    StudentDTO addStudent(RegisterDTO registerDTO, Long classId);
+//    DirectorDTO addDirector(RegisterDTO registerDTO, Long schoolId);
     // boolean addParent();
     ClassDTO addClass(Long schoolId, CreateClassDTO createClassDTO);
     List<ClassDTO> getClassesBySchoolId(Long schoolId);
