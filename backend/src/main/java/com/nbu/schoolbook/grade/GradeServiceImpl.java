@@ -1,17 +1,18 @@
 package com.nbu.schoolbook.grade;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.nbu.schoolbook.grade.dto.CreateGradeDTO;
 import com.nbu.schoolbook.grade.dto.GradeDTO;
 import com.nbu.schoolbook.grade.dto.UpdateGradeDTO;
 import com.nbu.schoolbook.subject.SubjectRepository;
 import com.nbu.schoolbook.user.student.StudentRepository;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GradeServiceImpl implements GradeService {
@@ -54,7 +55,6 @@ public class GradeServiceImpl implements GradeService {
         GradeEntity gradeEntity = gradeRepository.findById(gradeId).orElseThrow();
         gradeEntity.setGrade(updateGradeDTO.getGrade());
         gradeEntity.setStudent(studentRepository.findById(updateGradeDTO.getStudentId()).orElseThrow());
-        gradeEntity.setTeacher(teacherRepository.findById(updateGradeDTO.getTeacherId()).orElseThrow());
         gradeEntity.setSubject(subjectRepository.findById(updateGradeDTO.getSubjectId()).orElseThrow());
 
         GradeEntity updatedGrade = gradeRepository.save(gradeEntity);

@@ -1,10 +1,11 @@
 package com.nbu.schoolbook.absence;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AbsenceRepository extends JpaRepository<AbsenceEntity, Long> {
-
-    @Query("SELECT COUNT(a) FROM AbsenceEntity a WHERE a.student.id = :studentId")
-    long countByStudentId(Long studentId);
+    List<AbsenceEntity> findAllByStudentId(Long studentId);
 }
