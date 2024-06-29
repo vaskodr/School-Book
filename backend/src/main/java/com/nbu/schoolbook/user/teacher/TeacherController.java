@@ -1,10 +1,8 @@
 package com.nbu.schoolbook.user.teacher;
 
-import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +13,6 @@ import java.util.List;
 @RequestMapping("/api/teacher")
 public class TeacherController {
     private final TeacherService teacherService;
-    @PostMapping("/create")
-    public ResponseEntity<TeacherDTO> createTeacher(@RequestBody CreateTeacherDTO createTeacherDTO) {
-        TeacherDTO savedTeacher = teacherService.createTeacher(createTeacherDTO);
-        return ResponseEntity.ok(savedTeacher);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable("id") Long id) {

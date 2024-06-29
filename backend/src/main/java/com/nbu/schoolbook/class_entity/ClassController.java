@@ -18,11 +18,11 @@ public class ClassController {
 
     private final ClassService classService;
 
-    @PostMapping
-    public ResponseEntity<ClassDTO> createClass(@RequestBody CreateClassDTO createClassDTO) {
-        ClassDTO classDTO = classService.createClass(createClassDTO);
-        return new ResponseEntity<>(classDTO, HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<ClassDTO> createClass(@RequestBody CreateClassDTO createClassDTO) {
+//        ClassDTO classDTO = classService.createClass(createClassDTO);
+//        return new ResponseEntity<>(classDTO, HttpStatus.CREATED);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClassDTO> getClassById(@PathVariable Long id) {

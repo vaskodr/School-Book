@@ -9,12 +9,4 @@ import org.springframework.stereotype.Component;
 @Component
 public class AbsenceMapper {
     private final ModelMapper modelMapper;
-
-    public AbsenceDTO mapToDTO(AbsenceEntity absence) {
-        return modelMapper.map(absence, AbsenceDTO.class);
-    }
-
-    public AbsenceEntity mapToEntity(AbsenceDTO absenceDTO) {
-        return modelMapper.map(absenceDTO, AbsenceEntity.class);
-    }
 }

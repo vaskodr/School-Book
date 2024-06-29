@@ -10,7 +10,7 @@ import lombok.*;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "school_session")
+@Table(name = "class_session")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,6 +22,7 @@ public class ClassSessionEntity {
     private Long id;
 
     @Column(nullable = false)
+    //@Enumerated(EnumType.STRING)
     private DayOfWeek day;
 
     @Column(nullable = false)
@@ -30,16 +31,16 @@ public class ClassSessionEntity {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false)
     private TeacherEntity teacher;
 
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false)
     private SubjectEntity subject;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "program_id", nullable = false)
     private ProgramEntity program;
 
 }

@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.auth.dto;
 
+import com.nbu.schoolbook.user.dto.UserDetailsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,5 @@ import java.util.List;
 public class JwtAuthResponse {
     private String accessToken;
     private List<String> roles;
+    private UserDetailsDTO userDetailsDTO;
 }

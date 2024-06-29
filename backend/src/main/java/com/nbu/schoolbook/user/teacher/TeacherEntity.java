@@ -1,5 +1,7 @@
 package com.nbu.schoolbook.user.teacher;
 
+import com.nbu.schoolbook.class_entity.ClassEntity;
+import com.nbu.schoolbook.class_session.ClassSessionEntity;
 import com.nbu.schoolbook.school.SchoolEntity;
 import com.nbu.schoolbook.subject.SubjectEntity;
 import com.nbu.schoolbook.user.UserEntity;
@@ -35,4 +37,11 @@ public class TeacherEntity {
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private Set<SubjectEntity> subjects;
+
+    @OneToOne
+    @JoinColumn(name = "class_id")
+    private ClassEntity mentoredClass;
+
+    @OneToMany(mappedBy = "teacher")
+    private Set<ClassSessionEntity> classSessions;
 }

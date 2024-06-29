@@ -36,6 +36,6 @@ public class ClassEntity {
     private Set<StudentEntity> students;
 
     @OneToOne
-    @JoinColumn(name = "mentor", nullable = false)
+    @JoinColumn(name = "mentor")
     private TeacherEntity mentor;
 }

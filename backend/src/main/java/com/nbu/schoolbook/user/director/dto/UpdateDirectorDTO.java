@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateDirectorDTO {
+    private Long userId;
+    private Long schoolId;
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;

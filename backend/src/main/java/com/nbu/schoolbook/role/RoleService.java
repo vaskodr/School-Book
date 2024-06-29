@@ -12,4 +12,7 @@ public interface RoleService {
     List<RoleDTO> getRoles();
     RoleDTO updateRole(Long id, UpdateRoleDTO updateRoleDTO);
     void deleteRole(Long id);
+
+
+
 }

@@ -1,18 +1,35 @@
 package com.nbu.schoolbook.user;
 
+import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
 import com.nbu.schoolbook.role.dto.RoleDTO;
+import com.nbu.schoolbook.school.SchoolEntity;
+import com.nbu.schoolbook.school.SchoolMapper;
+import com.nbu.schoolbook.school.dto.SchoolDTO;
+import com.nbu.schoolbook.user.director.DirectorEntity;
+import com.nbu.schoolbook.user.director.DirectorRepository;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.dto.UpdateUserDTO;
 import com.nbu.schoolbook.user.dto.UserDTO;
+import com.nbu.schoolbook.user.dto.UserDetailsDTO;
+import com.nbu.schoolbook.user.parent.ParentEntity;
+import com.nbu.schoolbook.user.parent.ParentRepository;
+import com.nbu.schoolbook.user.student.StudentEntity;
+import com.nbu.schoolbook.user.student.StudentMapper;
+import com.nbu.schoolbook.user.student.StudentRepository;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
+import com.nbu.schoolbook.user.teacher.TeacherRepository;
+import com.nbu.schoolbook.user.teacher.TeacherService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,29 +41,26 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TeacherRepository teacherRepository;
 
     @Override
     public RegisterDTO createUser(RegisterDTO registerDTO) {
-        UserEntity user = userMapper.mapRegisterDTOToEntity(registerDTO);
-        Set<RoleEntity> roles = new HashSet<>();
-
-        for (String roleName : registerDTO.getRoles()) {
-            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException(
-                                    "Role does not exist with name: " + roleName.toUpperCase()
-                            )
-                    );
-            roles.add(role);
-        }
-        user.setRoles(roles);
+        UserEntity user = new UserEntity();
+        user.setId(registerDTO.getId());
+        user.setFirstName(registerDTO.getFirstName());
+        user.setLastName(registerDTO.getLastName());
+        user.setDateOfBirth(registerDTO.getDateOfBirth());
+        user.setGender(Gender.valueOf(registerDTO.getGender()));
+        user.setPhone(registerDTO.getPhone());
+        user.setEmail(registerDTO.getEmail());
+        user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        UserEntity savedUser = userRepository.save(user);
-        return userMapper.mapToRegisterDTO(savedUser);
+
+        return userMapper.mapToRegisterDTO(user);
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(String id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -64,7 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UpdateUserDTO updateUser(Long id, UpdateUserDTO userDTO) {
+    public UpdateUserDTO updateUser(String id, UpdateUserDTO userDTO) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found with id: " + id));
@@ -96,9 +110,7 @@ public class UserServiceImpl implements UserService {
 
         Set<RoleEntity> roles = new HashSet<>();
         for (RoleDTO roleDTO : userDTO.getRoles()) {
-            RoleEntity role = roleRepository.findByName(roleDTO.getName())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Role does not exist with name: " + roleDTO.getName()));
+            RoleEntity role = roleRepository.findByName(roleDTO.getName());
             roles.add(role);
         }
         user.setRoles(roles);
@@ -108,7 +120,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public UserEntity getUser(RegisterDTO registerDTO, String roleName) {
+        Optional<UserEntity> userOptional = userRepository.findById(registerDTO.getId());
+        RoleEntity role = roleRepository.findByName(roleName);
+
+        if (role == null) {
+            throw new RuntimeException(roleName + " role not found!");
+        }
+
+        UserEntity user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            if (user.getRoles().contains(role) && teacherRepository.existsByUserEntity(user)) {
+                throw new RuntimeException("User is already a " + roleName.toLowerCase() + "!");
+            }
+            if (user.getRoles() == null) {
+                user.setRoles(new HashSet<>());
+            }
+            user.getRoles().add(role);
+            userRepository.save(user);
+        } else {
+            user = userMapper.mapRegisterDTOToEntity(registerDTO);
+            user.setRoles(new HashSet<>());
+            user.getRoles().add(role);
+            userRepository.save(user);
+        }
+        return user;
+    }
+
+//    public SchoolDTO getSchoolByUserId(String userId) {
+//        TeacherEntity teacher = teacherRepository.findByUserEntityId(userId);
+//        if (teacher != null) {
+//            return schoolMapper.mapToDTO(teacher.getSchool());
+//        }
+//
+//        StudentEntity student = studentRepository.findByUserEntityId(userId);
+//        if (student != null) {
+//            return schoolMapper.mapToDTO(student.getStudentClass().getSchool());
+//        }
+//
+////        ParentEntity parent = parentRepository.findByUserEntityId(userId);
+////        if (parent != null) {
+////            return schoolMapper.mapToDTO(parent)
+////        }
+//
+//        DirectorEntity director = directorRepository.findByUserEntityId(userId);
+//        if (director != null) {
+//            return schoolMapper.mapToDTO(director.getSchool());
+//        }
+//
+//        return null; // Or throw an appropriate exception
+//    }
+//
+//
+//    public UserDetailsDTO getUserDetails(String userId) {
+//        UserEntity userEntity = userRepository.findById(userId)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+//
+//        UserDetailsDTO userDTO = new UserDetailsDTO();
+//        userDTO.setId(userEntity.getId());
+//        userDTO.setUsername(userEntity.getUsername());
+//        userDTO.setEmail(userEntity.getEmail());
+//        userDTO.setFirstName(userEntity.getFirstName());
+//        userDTO.setLastName(userEntity.getLastName());
+//        userDTO.setSchoolId();
+//
+//        return userDTO;
+//    }
 }

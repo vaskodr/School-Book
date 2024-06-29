@@ -1,16 +1,21 @@
 package com.nbu.schoolbook.user.teacher;
 
+import com.nbu.schoolbook.class_entity.ClassEntity;
+import com.nbu.schoolbook.class_entity.ClassRepository;
+import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
-import com.nbu.schoolbook.school.SchoolEntity;
-import com.nbu.schoolbook.school.SchoolRepository;
+import com.nbu.schoolbook.school.*;
 import com.nbu.schoolbook.subject.SubjectEntity;
 import com.nbu.schoolbook.subject.SubjectMapper;
 import com.nbu.schoolbook.subject.SubjectRepository;
 import com.nbu.schoolbook.subject.SubjectService;
 import com.nbu.schoolbook.user.UserEntity;
+import com.nbu.schoolbook.user.UserMapper;
 import com.nbu.schoolbook.user.UserRepository;
+import com.nbu.schoolbook.user.UserService;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,44 +36,41 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
+    private final SubjectRepository subjectRepository;
+    private final TeacherMapper teacherMapper;
+    private final ClassRepository classRepository;
+    private final SchoolRepository schoolRepository;
 
     @Override
-    public TeacherDTO createTeacher(CreateTeacherDTO createTeacherDTO) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFirstName(createTeacherDTO.getFirstName());
-        userEntity.setLastName(createTeacherDTO.getLastName());
-        userEntity.setDateOfBirth(createTeacherDTO.getDateOfBirth());
-        userEntity.setGender(createTeacherDTO.getGender());
-        userEntity.setPhone(createTeacherDTO.getPhone());
-        userEntity.setEmail(createTeacherDTO.getEmail());
-        userEntity.setUsername(createTeacherDTO.getUsername());
-        userEntity.setPassword(passwordEncoder.encode(createTeacherDTO.getPassword()));
+    public TeacherDTO registerTeacher(RegisterDTO registerDTO, Long schoolId) {
+        SchoolEntity school = getSchoolEntity(schoolId);
+        ClassEntity mentorClass = getClassIfProvided(registerDTO);
+        UserEntity user = getUser(registerDTO, "ROLE_TEACHER");
+        TeacherEntity teacher = createTeacherEntity(user, school);
 
-        UserEntity savedUser = userRepository.save(userEntity);
+        if (mentorClass != null) {
+            assignClassMentor(teacher, mentorClass);
+        }
 
-        TeacherEntity teacherEntity = new TeacherEntity();
-        teacherEntity.setUserEntity(savedUser);
+        handleSubjectAssociation(registerDTO, teacher);
 
-        teacherEntity = teacherRepository.save(teacherEntity);
-
-        return new TeacherDTO(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getDateOfBirth(), savedUser.getGender(), savedUser.getPhone(), savedUser.getEmail(), savedUser.getUsername(), createTeacherDTO.getSubjectIds(), createTeacherDTO.getSchoolId());
+        return teacherMapper.mapEntityToDTO(teacher);
     }
 
     @Override
     public TeacherDTO getTeacherById(Long id) {
         TeacherEntity teacherEntity = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-        UserEntity userEntity = teacherEntity.getUserEntity();
-        return new TeacherDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername(), null, null);
+        return teacherMapper.mapEntityToDTO(teacherEntity);
     }
 
     @Override
     public List<TeacherDTO> getAllTeachers() {
-        return teacherRepository.findAll().stream()
-                .map(teacherEntity -> {
-                    UserEntity userEntity = teacherEntity.getUserEntity();
-                    return new TeacherDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername(), null, null);
-                })
+        List<TeacherEntity> teachers = teacherRepository.findAll();
+        return teachers.stream()
+                .map(teacherMapper::mapEntityToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +79,44 @@ public class TeacherServiceImpl implements TeacherService {
         TeacherEntity teacherEntity = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
 
-        UserEntity userEntity = teacherEntity.getUserEntity();
+        updateUserEntity(teacherEntity.getUserEntity(), updateTeacherDTO);
+        userRepository.save(teacherEntity.getUserEntity());
+
+        return teacherMapper.mapEntityToDTO(teacherEntity);
+    }
+
+    @Override
+    public void deleteTeacher(Long id) {
+        if (!teacherRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Teacher not found");
+        }
+        teacherRepository.deleteById(id);
+    }
+
+    @Override
+    public void assignClassMentor(TeacherEntity teacher, ClassEntity mentorClass) {
+        mentorClass.setMentor(teacher);
+        teacher.setMentoredClass(mentorClass);
+        classRepository.save(mentorClass);
+        teacherRepository.save(teacher);
+    }
+
+    @Override
+    public void handleSubjectAssociation(RegisterDTO registerDTO, TeacherEntity teacher) {
+        if (registerDTO.getSubjectIds() != null) {
+            Set<SubjectEntity> subjects = new HashSet<>(subjectRepository.findAllById(registerDTO.getSubjectIds()));
+            teacher.setSubjects(subjects);
+        }
+        teacherRepository.save(teacher);
+    }
+
+
+    private SchoolEntity getSchoolEntity(Long schoolId) {
+        return schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new RuntimeException("School not found!"));
+    }
+
+    private void updateUserEntity(UserEntity userEntity, UpdateTeacherDTO updateTeacherDTO) {
         if (updateTeacherDTO.getFirstName() != null) userEntity.setFirstName(updateTeacherDTO.getFirstName());
         if (updateTeacherDTO.getLastName() != null) userEntity.setLastName(updateTeacherDTO.getLastName());
         if (updateTeacherDTO.getDateOfBirth() != null) userEntity.setDateOfBirth(updateTeacherDTO.getDateOfBirth());
@@ -85,16 +125,57 @@ public class TeacherServiceImpl implements TeacherService {
         if (updateTeacherDTO.getEmail() != null) userEntity.setEmail(updateTeacherDTO.getEmail());
         if (updateTeacherDTO.getUsername() != null) userEntity.setUsername(updateTeacherDTO.getUsername());
         if (updateTeacherDTO.getPassword() != null) userEntity.setPassword(passwordEncoder.encode(updateTeacherDTO.getPassword()));
-
-        userRepository.save(userEntity);
-
-        return new TeacherDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername(), updateTeacherDTO.getSubjectIds(), updateTeacherDTO.getSchoolId());
     }
 
-    @Override
-    public void deleteTeacher(Long id) {
-        TeacherEntity teacherEntity = teacherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-        teacherRepository.deleteById(id);
+    private ClassEntity getClassIfProvided(RegisterDTO registerDTO) {
+        if (registerDTO.getClassId() != null) {
+            ClassEntity mentorClass = classRepository.findById(registerDTO.getClassId())
+                    .orElseThrow(() -> new RuntimeException("Class not found!"));
+
+            if (mentorClass.getMentor() != null) {
+                throw new RuntimeException("Class already has a mentor!");
+            }
+            return mentorClass;
+        }
+        return null;
+    }
+
+    private UserEntity getUser(RegisterDTO registerDTO, String roleName) {
+        Optional<UserEntity> userOptional = userRepository.findById(registerDTO.getId());
+        RoleEntity role = roleRepository.findByName(roleName);
+
+        if (role == null) {
+            throw new RuntimeException(roleName + " role not found!");
+        }
+
+        UserEntity user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            if (user.getRoles().contains(role) && teacherRepository.existsByUserEntity(user)) {
+                throw new RuntimeException("User is already a " + roleName.toLowerCase() + "!");
+            }
+            if (user.getRoles() == null) {
+                user.setRoles(new HashSet<>());
+            }
+            user.getRoles().add(role);
+        } else {
+            user = userMapper.mapRegisterDTOToEntity(registerDTO);
+            user.setRoles(new HashSet<>());
+            user.getRoles().add(role);
+        }
+        return userRepository.save(user);
+    }
+
+    private TeacherEntity createTeacherEntity(UserEntity user, SchoolEntity school) {
+        TeacherEntity teacher = new TeacherEntity();
+        teacher.setUserEntity(user);
+        teacher.setSchool(school);
+        teacher.setSubjects(new HashSet<>());
+        teacher.setClassSessions(new HashSet<>());
+
+        TeacherEntity savedTeacher = teacherRepository.save(teacher);
+        school.getTeachers().add(savedTeacher);
+        schoolRepository.save(school);
+        return savedTeacher;
     }
 }

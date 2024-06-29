@@ -12,7 +12,7 @@ public class SchoolbookApplication {
 		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 		// The string to be encoded
-		String rawPassword = "vasko";
+		String rawPassword = "password123";
 
 		// Encode the string
 		String encodedPassword = passwordEncoder.encode(rawPassword);

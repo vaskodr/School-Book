@@ -3,9 +3,11 @@ package com.nbu.schoolbook.user;
 import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.role.RoleEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -16,8 +18,8 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Pattern(regexp = "\\d{10}", message = "The field must contain exactly 10 digits!")
+    private String id;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -49,5 +51,5 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<RoleEntity> roles;
+    private Set<RoleEntity> roles = new HashSet<>();
 }

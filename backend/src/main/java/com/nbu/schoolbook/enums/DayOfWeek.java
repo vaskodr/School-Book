@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.enums;
 
+import lombok.Data;
 import lombok.Getter;
 
 @Getter

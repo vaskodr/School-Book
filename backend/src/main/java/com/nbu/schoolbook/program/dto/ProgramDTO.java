@@ -1,34 +1,19 @@
 package com.nbu.schoolbook.program.dto;
 
+import com.nbu.schoolbook.class_session.dto.ClassSessionDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 import java.util.Set;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProgramDTO {
     private Long id;
     private Long classId;
-    private Set<Long> classSessionIds;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getClassId() {
-        return classId;
-    }
-
-    public void setClassId(Long classId) {
-        this.classId = classId;
-    }
-
-    public Set<Long> getClassSessionIds() {
-        return classSessionIds;
-    }
-
-    public void setClassSessionIds(Set<Long> classSessionIds) {
-        this.classSessionIds = classSessionIds;
-    }
+    private List<ClassSessionDTO> classSessions;
 }

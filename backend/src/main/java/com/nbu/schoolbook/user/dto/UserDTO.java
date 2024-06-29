@@ -2,7 +2,9 @@ package com.nbu.schoolbook.user.dto;
 
 import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.role.dto.RoleDTO;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +19,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
+    private String id;
+
     private String firstName;
+
     private String lastName;
-    private LocalDate dateOfBirth;
-    private Gender gender;
-    private String phone;
+
     private String email;
+
     private String username;
-    private List<RoleDTO> roles;
+
+    private List<String> roles;
+    private Long schoolId;
 }

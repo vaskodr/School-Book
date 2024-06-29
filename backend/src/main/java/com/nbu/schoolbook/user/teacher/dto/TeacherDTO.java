@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.user.teacher.dto;
 
 import com.nbu.schoolbook.enums.Gender;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeacherDTO {
-    private Long id;
+    private String id;
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
@@ -25,4 +26,6 @@ public class TeacherDTO {
     private String username;
     private List<Long> subjectIds;
     private Long schoolId;
+    @Nullable
+    private Long classId;
 }

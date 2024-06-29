@@ -12,91 +12,89 @@ import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
 public class ClassSessionServiceImpl implements ClassSessionService{
 
-    private final ClassSessionRepository classSessionRepository;
+    private final ProgramRepository programRepository;
     private final ClassSessionMapper classSessionMapper;
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
-    private final ProgramRepository programRepository;
-
+    private final ClassSessionRepository classSessionRepository;
 
 
     @Override
-    public ClassSessionDTO createClassSession(CreateClassSessionDTO createClassSessionDTO) {
-        ClassSessionEntity classSessionEntity = new ClassSessionEntity();
-
-        classSessionEntity.setDay(createClassSessionDTO.getDay());
-        classSessionEntity.setStartTime(createClassSessionDTO.getStartTime());
-        classSessionEntity.setEndTime(createClassSessionDTO.getEndTime());
-
+    @Transactional
+    public ClassSessionDTO createClassSession(CreateClassSessionDTO createClassSessionDTO, Long programId) {
         TeacherEntity teacher = teacherRepository.findById(createClassSessionDTO.getTeacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-        classSessionEntity.setTeacher(teacher);
-
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
         SubjectEntity subject = subjectRepository.findById(createClassSessionDTO.getSubjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
-        classSessionEntity.setSubject(subject);
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+        ProgramEntity program = programRepository.findById(programId)
+                .orElseThrow(() -> new RuntimeException("Program not found"));
 
-        ProgramEntity program = programRepository.findById(createClassSessionDTO.getProgramId())
-                .orElseThrow(() -> new ResourceNotFoundException("Program not found"));
-        classSessionEntity.setProgram(program);
+        if (teacher.getSubjects().contains(subject)) {
+            ClassSessionEntity classSessionEntity = new ClassSessionEntity();
+            classSessionEntity.setDay(createClassSessionDTO.getDay());
+            classSessionEntity.setStartTime(createClassSessionDTO.getStartTime());
+            classSessionEntity.setEndTime(createClassSessionDTO.getEndTime());
+            classSessionEntity.setTeacher(teacher);
+            classSessionEntity.setSubject(subject);
+            classSessionEntity.setProgram(program);
 
-        ClassSessionEntity savedClassSession = classSessionRepository.save(classSessionEntity);
-        return classSessionMapper.mapToDTO(savedClassSession);
+            teacher.getClassSessions().add(classSessionEntity);
+            subject.getClassSessions().add(classSessionEntity);
+
+            teacherRepository.save(teacher);
+            subjectRepository.save(subject);
+            // Save the class session entity
+            classSessionEntity = classSessionRepository.save(classSessionEntity);
+            return classSessionMapper.mapToDTO(classSessionEntity);
+        } else {
+            throw new RuntimeException("That teacher does not have qualification for that subject!");
+        }
+
     }
 
     @Override
     public ClassSessionDTO getClassSessionById(Long id) {
-        ClassSessionEntity classSessionEntity = classSessionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Class session not found"));
-        return classSessionMapper.mapToDTO(classSessionEntity);
+        ClassSessionEntity classSession = classSessionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ClassSession not found!"));
+        return classSessionMapper.mapToDTO(classSession);
     }
 
     @Override
     public List<ClassSessionDTO> getAllClassSessions() {
-        List<ClassSessionEntity> classSessions = classSessionRepository.findAll();
-        return classSessions.stream()
-                .map(classSession -> classSessionMapper.mapToDTO(classSession))
+        return classSessionRepository.findAll().stream()
+                .map(classSessionMapper::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public ClassSessionDTO updateClassSession(Long id, UpdateClassSessionDTO updateClassSessionDTO) {
-        ClassSessionEntity classSessionEntity = classSessionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Class session not found"));
+        ClassSessionEntity classSession = classSessionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ClassSession not found!"));
 
-        classSessionEntity.setDay(updateClassSessionDTO.getDay());
-        classSessionEntity.setStartTime(updateClassSessionDTO.getStartTime());
-        classSessionEntity.setEndTime(updateClassSessionDTO.getEndTime());
+        classSession.setDay(updateClassSessionDTO.getDay());
+        classSession.setStartTime(updateClassSessionDTO.getStartTime());
+        classSession.setEndTime(updateClassSessionDTO.getEndTime());
+        classSession.setTeacher(teacherRepository.findById(updateClassSessionDTO.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher not found!")));
+        classSession.setSubject(subjectRepository.findById(updateClassSessionDTO.getSubjectId())
+                .orElseThrow(() -> new RuntimeException("Subject not found!")));
 
-        TeacherEntity teacher = teacherRepository.findById(updateClassSessionDTO.getTeacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
-        classSessionEntity.setTeacher(teacher);
-
-        SubjectEntity subject = subjectRepository.findById(updateClassSessionDTO.getSubjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
-        classSessionEntity.setSubject(subject);
-
-        ProgramEntity program = programRepository.findById(updateClassSessionDTO.getProgramId())
-                .orElseThrow(() -> new ResourceNotFoundException("Program not found"));
-        classSessionEntity.setProgram(program);
-
-        ClassSessionEntity updatedClassSession = classSessionRepository.save(classSessionEntity);
-        return classSessionMapper.mapToDTO(updatedClassSession);
+        classSession = classSessionRepository.save(classSession);
+        return classSessionMapper.mapToDTO(classSession);
     }
 
     @Override
     public void deleteClassSession(Long id) {
-        if (!classSessionRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Class session not found");
-        }
         classSessionRepository.deleteById(id);
     }
 }

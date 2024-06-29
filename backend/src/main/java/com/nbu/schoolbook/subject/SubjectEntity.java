@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.subject;
 
+import com.nbu.schoolbook.class_session.ClassSessionEntity;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,4 +24,7 @@ public class SubjectEntity {
 
     @ManyToMany(mappedBy = "subjects")
     private Set<TeacherEntity> teachers;
+
+    @OneToMany(mappedBy = "subject")
+    private Set<ClassSessionEntity> classSessions;
 }

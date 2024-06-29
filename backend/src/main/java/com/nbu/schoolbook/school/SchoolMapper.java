@@ -18,26 +18,17 @@ import java.util.stream.StreamSupport;
 public class SchoolMapper {
 
     private final ModelMapper modelMapper;
-    private final ClassRepository classRepository;
-    public SchoolDTO mapToDTO(SchoolEntity school) {
-        SchoolDTO schoolDTO = modelMapper.map(school, SchoolDTO.class);
-        schoolDTO.setClassIds(school.getClasses().stream().map(ClassEntity::getId).collect(Collectors.toList()));
-        return schoolDTO;
+
+    public SchoolDTO mapToDTO(SchoolEntity school){
+        return modelMapper.map(school, SchoolDTO.class);
     }
 
-    public SchoolEntity mapDTOToEntity(SchoolDTO schoolDTO) {
-        SchoolEntity schoolEntity = modelMapper.map(schoolDTO, SchoolEntity.class);
-        Set<ClassEntity> classes = StreamSupport.stream(classRepository.findAllById(schoolDTO.getClassIds()).spliterator(), false)
-                .collect(Collectors.toSet());
-        schoolEntity.setClasses(classes);
-        return schoolEntity;
+    public SchoolEntity mapToEntity(SchoolDTO schoolDTO){
+        return modelMapper.map(schoolDTO, SchoolEntity.class);
     }
 
-    public CreateSchoolDTO mapEntityToCreateDTO(SchoolEntity school) {
-        return modelMapper.map(school, CreateSchoolDTO.class);
-    }
-
-    public SchoolEntity mapCreateDTOToEntity(CreateSchoolDTO createSchoolDTO) {
+    public SchoolEntity mapCreateToEntity(CreateSchoolDTO createSchoolDTO) {
         return modelMapper.map(createSchoolDTO, SchoolEntity.class);
     }
+
 }

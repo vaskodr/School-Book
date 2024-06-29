@@ -2,14 +2,19 @@ package com.nbu.schoolbook.user.parent;
 
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
 import com.nbu.schoolbook.user.UserEntity;
+import com.nbu.schoolbook.user.UserMapper;
 import com.nbu.schoolbook.user.UserRepository;
+import com.nbu.schoolbook.user.UserService;
+import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.parent.dto.CreateParentDTO;
 import com.nbu.schoolbook.user.parent.dto.ParentDTO;
 import com.nbu.schoolbook.user.parent.dto.UpdateParentDTO;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,27 +25,19 @@ public class ParentServiceImpl implements ParentService {
     private final ParentRepository parentRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
     @Override
-    public ParentDTO createParent(CreateParentDTO createParentDTO) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFirstName(createParentDTO.getFirstName());
-        userEntity.setLastName(createParentDTO.getLastName());
-        userEntity.setDateOfBirth(createParentDTO.getBirthDate());
-        userEntity.setGender(createParentDTO.getGender());
-        userEntity.setPhone(createParentDTO.getPhone());
-        userEntity.setEmail(createParentDTO.getEmail());
-        userEntity.setUsername(createParentDTO.getUsername());
-        userEntity.setPassword(passwordEncoder.encode(createParentDTO.getPassword()));
-
+    public ParentDTO createParent(RegisterDTO registerDTO) {
+        UserEntity userEntity = userMapper.mapRegisterDTOToEntity(userService.createUser(registerDTO));
         UserEntity savedUser = userRepository.save(userEntity);
 
         ParentEntity parentEntity = new ParentEntity();
         parentEntity.setUserEntity(savedUser);
+        parentRepository.save(parentEntity);
 
-        parentEntity = parentRepository.save(parentEntity);
-
-        return new ParentDTO(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getDateOfBirth(), savedUser.getGender(), savedUser.getPhone(), savedUser.getEmail(), savedUser.getUsername());
+        return null;
     }
 
     @Override
@@ -48,17 +45,12 @@ public class ParentServiceImpl implements ParentService {
         ParentEntity parentEntity = parentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
         UserEntity userEntity = parentEntity.getUserEntity();
-        return new ParentDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername());
+        return null;
     }
 
     @Override
     public List<ParentDTO> getAllParents() {
-        return parentRepository.findAll().stream()
-                .map(parentEntity -> {
-                    UserEntity userEntity = parentEntity.getUserEntity();
-                    return new ParentDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername());
-                })
-                .collect(Collectors.toList());
+        return null;
     }
 
     @Override
@@ -79,7 +71,7 @@ public class ParentServiceImpl implements ParentService {
 
         userRepository.save(userEntity);
 
-        return new ParentDTO(userEntity.getId(), userEntity.getFirstName(), userEntity.getLastName(), userEntity.getDateOfBirth(), userEntity.getGender(), userEntity.getPhone(), userEntity.getEmail(), userEntity.getUsername());
+        return null;
     }
 
     @Override
@@ -87,5 +79,11 @@ public class ParentServiceImpl implements ParentService {
         ParentEntity parentEntity = parentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
         parentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Long> getParents(Long studentId) {
+
+        return null;
     }
 }

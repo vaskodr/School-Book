@@ -5,6 +5,7 @@ import com.nbu.schoolbook.class_session.ClassSessionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,8 +24,8 @@ public class ProgramEntity {
     @JoinColumn(nullable = false)
     private ClassEntity associatedClass;
 
-    @OneToMany(mappedBy = "program")
-    private Set<ClassSessionEntity> classSessions;
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ClassSessionEntity> classSessions = new HashSet<>();
 
 
 

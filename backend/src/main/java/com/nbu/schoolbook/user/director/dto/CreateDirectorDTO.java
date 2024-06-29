@@ -13,10 +13,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateDirectorDTO {
+    private Long schoolId;
     private String firstName;
     private String lastName;
-    private LocalDate birthDate;
-    private Gender gender;
+    private LocalDate dateOfBirth;
+    private String gender;
     private String phone;
     private String email;
     private String username;

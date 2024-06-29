@@ -19,13 +19,15 @@ import java.util.List;
 @AllArgsConstructor
 public class RegisterDTO {
     @NotBlank
+    private String id;
+    @NotBlank
     private String firstName;
     @NotBlank
     private String lastName;
     @NotBlank
-    private LocalDate birthDate;
+    private LocalDate dateOfBirth;
     @NotBlank
-    private Gender gender;
+    private String gender;
     @NotBlank
     private String phone;
     @NotBlank
@@ -34,19 +36,15 @@ public class RegisterDTO {
     private String username;
     @NotBlank
     private String password;
-    @NotBlank
-    private List<String> roles;
+
+
+
+    @Nullable
+    private RegisterDTO registerDTO;
     @Nullable
     private List<Long> subjectIds;
     @Nullable
-    private Long schoolId;
-    @Nullable
-    private List<Long> gradeIds;
-    @Nullable
-    private List<Long> absenceIds;
-    @Nullable
-    private List<Long> parentIds;
-    @Nullable
     private Long classId;
-
+    @Nullable
+    private Long schoolId;
 }

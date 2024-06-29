@@ -1,12 +1,14 @@
 package com.nbu.schoolbook.user.parent.dto;
 
 import com.nbu.schoolbook.enums.Gender;
+import com.nbu.schoolbook.user.student.dto.StudentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,4 +23,5 @@ public class ParentDTO {
     private String phone;
     private String email;
     private String username;
+    private List<StudentDTO> children;
 }

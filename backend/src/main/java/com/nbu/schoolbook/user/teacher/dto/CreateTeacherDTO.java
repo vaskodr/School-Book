@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateTeacherDTO {
+    private String id;
     private String firstName;
     private String lastName;
     private LocalDate dateOfBirth;
@@ -23,9 +24,10 @@ public class CreateTeacherDTO {
     private String email;
     private String username;
     private String password;
+
     @Nullable
     private List<Long> subjectIds;
     @Nullable
-    private Long schoolId;
+    private Long classId;
 
 }

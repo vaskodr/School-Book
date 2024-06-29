@@ -7,7 +7,7 @@ import com.nbu.schoolbook.class_session.dto.UpdateClassSessionDTO;
 import java.util.List;
 
 public interface ClassSessionService {
-    ClassSessionDTO createClassSession(CreateClassSessionDTO createClassSessionDTO);
+    ClassSessionDTO createClassSession(CreateClassSessionDTO createClassSessionDTO, Long programId);
     ClassSessionDTO getClassSessionById(Long id);
     List<ClassSessionDTO> getAllClassSessions();
     ClassSessionDTO updateClassSession(Long id, UpdateClassSessionDTO updateClassSessionDTO);

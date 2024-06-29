@@ -28,6 +28,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public CreateSubjectDTO saveSubject(CreateSubjectDTO createSubjectDTO) {
         SubjectEntity subject = subjectMapper.mapCreateDTOToEntity(createSubjectDTO);
+        subject.setClassSessions(new HashSet<>());
         subject = subjectRepository.save(subject);
         return subjectMapper.mapEntityToCreateDTO(subject);
 

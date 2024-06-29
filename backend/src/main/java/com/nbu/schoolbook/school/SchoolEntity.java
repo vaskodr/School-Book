@@ -27,14 +27,16 @@ public class SchoolEntity {
     @Column(nullable = false)
     private String address;
 
-    @OneToOne(mappedBy = "school")
+    @OneToOne(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private DirectorEntity director;
 
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<ClassEntity> classes;
 
-    @OneToMany(mappedBy = "school")
+    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TeacherEntity> teachers;
+
+
 
 
 }

@@ -12,9 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SchoolDTO {
+    private Long id;
     private String name;
     private String address;
-    private Long directorId;
-    private List<Long> classIds;
-    private List<Long> teacherIds;
 }

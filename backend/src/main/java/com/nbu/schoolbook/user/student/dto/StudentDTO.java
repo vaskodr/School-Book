@@ -1,10 +1,8 @@
 package com.nbu.schoolbook.user.student.dto;
 
+import com.nbu.schoolbook.class_entity.dto.ClassDTO;
 import com.nbu.schoolbook.enums.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,17 +11,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class StudentDTO {
     private Long id;
     private String firstName;
     private String lastName;
-    private LocalDate dateOfBirth;
-    private Gender gender;
-    private String phone;
-    private String email;
-    private String username;
-    private List<Long> gradeIds;
-    private List<Long> absenceIds;
-    private List<Long> parentIds;
-    private Long classId;
+    private ClassDTO studentClass;
+
 }

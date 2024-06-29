@@ -2,15 +2,18 @@ package com.nbu.schoolbook.auth;
 
 import com.nbu.schoolbook.auth.dto.JwtAuthResponse;
 import com.nbu.schoolbook.auth.dto.LoginResponseDTO;
+import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.exception.APIException;
 import com.nbu.schoolbook.role.RoleEntity;
 import com.nbu.schoolbook.role.RoleRepository;
 import com.nbu.schoolbook.security.JwtTokenProvider;
+import com.nbu.schoolbook.user.UserService;
 import com.nbu.schoolbook.user.director.DirectorRepository;
 import com.nbu.schoolbook.user.dto.LoginDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.UserEntity;
 import com.nbu.schoolbook.user.director.DirectorEntity;
+import com.nbu.schoolbook.user.dto.UserDetailsDTO;
 import com.nbu.schoolbook.user.parent.ParentEntity;
 import com.nbu.schoolbook.user.UserRepository;
 import com.nbu.schoolbook.user.student.StudentEntity;
@@ -48,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private final DirectorRepository directorRepository;
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -72,16 +76,43 @@ public class AuthServiceImpl implements AuthService {
             Optional<UserEntity> userOptional = userRepository.findByUsernameOrEmail(loginDTO.getUsernameOrEmail(), loginDTO.getUsernameOrEmail());
 
             List<String> roles = new ArrayList<>();
+            UserDetailsDTO userDetailsDTO = new UserDetailsDTO();
+
             if (userOptional.isPresent()) {
                 UserEntity loggedInUser = userOptional.get();
                 roles = loggedInUser.getRoles().stream()
                         .map(RoleEntity::getName)
                         .collect(Collectors.toList());
+
+                userDetailsDTO.setId(loggedInUser.getId());
+                userDetailsDTO.setUsername(loggedInUser.getUsername());
+                userDetailsDTO.setEmail(loggedInUser.getEmail());
+                userDetailsDTO.setFirstName(loggedInUser.getFirstName());
+                userDetailsDTO.setLastName(loggedInUser.getLastName());
+
+                Long schoolId = null;
+
+                if (roles.contains("ROLE_STUDENT")) {
+                    Optional<StudentEntity> studentEntityOptional = studentRepository.findByUserEntityId(loggedInUser.getId());
+                    if (studentEntityOptional.isPresent()) {
+                        schoolId = studentEntityOptional.get().getStudentClass().getSchool().getId();
+                    }
+                } else if (roles.contains("ROLE_TEACHER")) {
+                    Optional<TeacherEntity> teacherEntityOptional = teacherRepository.findByUserEntityId(loggedInUser.getId());
+                    if (teacherEntityOptional.isPresent()) {
+                        schoolId = teacherEntityOptional.get().getSchool().getId();
+                    }
+                } else if (roles.contains("ROLE_ADMIN")) {
+                    // Handle admin case if needed
+                }
+
+                userDetailsDTO.setSchoolId(schoolId);
             }
 
             JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
             jwtAuthResponse.setRoles(roles);
             jwtAuthResponse.setAccessToken(token);
+            jwtAuthResponse.setUserDetailsDTO(userDetailsDTO);
 
             return jwtAuthResponse;
 
@@ -101,17 +132,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Set<RoleEntity> roles = new HashSet<>();
-        for (String roleName : registerDTO.getRoles()) {
-            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase())
-                    .orElseThrow(() -> new APIException("Role not found!"));
-            roles.add(role);
-        }
+//        for (String roleName : registerDTO.getRoles()) {
+//            RoleEntity role = roleRepository.findByName("ROLE_" + roleName.toUpperCase())
+//                    .orElseThrow(() -> new APIException("Role not found!"));
+//            roles.add(role);
+//        }
 
         UserEntity user = new UserEntity();
         user.setFirstName(registerDTO.getFirstName());
         user.setLastName(registerDTO.getLastName());
-        user.setDateOfBirth(registerDTO.getBirthDate());
-        user.setGender(registerDTO.getGender());
+        user.setDateOfBirth(registerDTO.getDateOfBirth());
+        user.setGender(Gender.valueOf(registerDTO.getGender()));
         user.setPhone(registerDTO.getPhone());
         user.setEmail(registerDTO.getEmail());
         user.setUsername(registerDTO.getUsername());

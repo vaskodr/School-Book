@@ -2,6 +2,7 @@ package com.nbu.schoolbook.absence;
 
 import com.nbu.schoolbook.class_session.ClassSessionEntity;
 import com.nbu.schoolbook.user.student.StudentEntity;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +25,8 @@ public class AbsenceEntity {
     @Column(nullable = false)
     private LocalDate date;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "class_session_id", nullable = false)
     private ClassSessionEntity classSession;
 
     @ManyToOne

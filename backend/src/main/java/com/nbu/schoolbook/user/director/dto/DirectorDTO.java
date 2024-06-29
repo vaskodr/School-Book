@@ -21,4 +21,6 @@ public class DirectorDTO {
     private String phone;
     private String email;
     private String username;
+    private Long userId;
+    private Long schoolId;
 }
