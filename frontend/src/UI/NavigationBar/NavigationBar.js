@@ -1,31 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './NavigationBar.css';
 import LoginModal from '../LoginModal/LoginModal';
+import { useAuth } from '../../Auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-class NavigationBar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoginModalOpen: false,
-    };
-  }
+const NavigationBar = () => {
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const { authData, logout } = useAuth();
+  const navigate = useNavigate();
 
-  handleLoginClick = () => {
-    this.setState({ isLoginModalOpen: true });
+  const handleLoginClick = () => {
+    setLoginModalOpen(true);
   };
 
-  handleCloseModal = () => {
-    this.setState({ isLoginModalOpen: false });
+  const handleCloseModal = () => {
+    setLoginModalOpen(false);
   };
 
-  render() {
-    return (
-        <div className="navbar">
-          <button className="navbar-button" onClick={this.handleLoginClick}>Вход</button>
-          {this.state.isLoginModalOpen && <LoginModal onClose={this.handleCloseModal} />}
-        </div>
-    );
-  }
-}
+  const handleLogoutClick = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <div className="navbar">
+      {!authData ? (
+        <button className="navbar-button" onClick={handleLoginClick}>Вход</button>
+      ) : (
+        <>
+          {authData.roles.includes('ROLE_ADMIN') && (
+            <button className="navbar-button" onClick={() => navigate('/admin/dashboard')}>Admin Home</button>
+          )}
+          {authData.roles.includes('ROLE_STUDENT') && (
+            <button className="navbar-button" onClick={() => navigate(`/student/dashboard/${authData.userDetailsDTO.schoolId}`)}>Student Home</button>
+          )}
+          {authData.roles.includes('ROLE_TEACHER') && (
+            <button className="navbar-button" onClick={() => navigate(`/teacher/dashboard/${authData.userDetailsDTO.schoolId}`)}>Teacher Home</button>
+          )}
+          <button className="navbar-button" onClick={handleLogoutClick}>Logout</button>
+        </>
+      )}
+      {isLoginModalOpen && <LoginModal onClose={handleCloseModal} />}
+    </div>
+  );
+};
 
 export default NavigationBar;
