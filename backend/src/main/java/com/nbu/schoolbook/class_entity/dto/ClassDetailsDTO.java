@@ -16,5 +16,4 @@ public class ClassDetailsDTO {
     private String name;
     private ClassLevel level;
     private String mentorName;
-    private List<StudentDetailsDTO> studentDetailsDTOS;
 }

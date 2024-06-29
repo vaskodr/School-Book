@@ -8,11 +8,11 @@ import com.nbu.schoolbook.user.dto.RegisterDTO;
 import java.util.List;
 
 public interface DirectorService {
-    DirectorDTO registerDirector(RegisterDTO registerDTO, Long schoolId);
-    DirectorDTO getDirectorById(Long id);
-    List<DirectorDTO> getAllDirectors();
-    DirectorDTO updateDirector(Long id, UpdateDirectorDTO updateDirectorDTO);
-    void deleteDirector(Long id);
+    void registerDirector(RegisterDTO registerDTO, Long schoolId);
+    DirectorDTO getDirectorById(Long schoolId, Long id);
+    //List<DirectorDTO> getAllDirectors();
+    void updateDirector(Long schoolId, Long id, UpdateDirectorDTO updateDirectorDTO);
+    void deleteDirector(Long schoolId, Long directorId);
 
     // TODO: methods assignDirectorToSchool && unassignDirectorFromSchool
 

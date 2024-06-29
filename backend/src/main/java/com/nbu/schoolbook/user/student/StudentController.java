@@ -38,10 +38,10 @@ public class StudentController {
 
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<StudentDTO> getStudentByUserId(@PathVariable Long schoolId, @PathVariable Long classId, @PathVariable String userId) {
-        StudentDTO studentDTO = studentService.getStudentById(schoolId, classId, userId);
-        return ResponseEntity.ok(studentDTO);
+    @GetMapping("/{studentId}")
+    public ResponseEntity<StudentDetailsDTO> getStudentByUserId(@PathVariable Long schoolId, @PathVariable Long classId, @PathVariable Long studentId) {
+        StudentDetailsDTO studentDetailsDTO = studentService.getStudentById(schoolId, classId, studentId);
+        return ResponseEntity.ok(studentDetailsDTO);
     }
 
     @GetMapping("/all")

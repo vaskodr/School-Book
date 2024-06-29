@@ -13,43 +13,43 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/school/{schoolId}")
+@RequestMapping("/api/school/{schoolId}/director")
 @AllArgsConstructor
 public class DirectorController {
 
     private final DirectorService directorService;
 
-
-    @GetMapping("/director/all")
-    public ResponseEntity<List<DirectorDTO>> getAllDirectors() {
-        List<DirectorDTO> directors = directorService.getAllDirectors();
-        return new ResponseEntity<>(directors, HttpStatus.OK);
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/add-director")
+    public ResponseEntity<String> addDirector(@PathVariable Long schoolId,
+                                              @RequestBody RegisterDTO createDirectorDTO){
+        directorService.registerDirector(createDirectorDTO, schoolId);
+        return ResponseEntity.ok("Director created and added successfully!");
     }
 
-    @GetMapping("/director/{id}")
-    public ResponseEntity<DirectorDTO> getDirectorById(@PathVariable Long id) {
-        DirectorDTO director = directorService.getDirectorById(id);
+    @GetMapping("/{directorId}")
+    public ResponseEntity<DirectorDTO> getDirectorById(@PathVariable Long schoolId,
+                                                       @PathVariable Long directorId) {
+        DirectorDTO director = directorService.getDirectorById(schoolId, directorId);
         return new ResponseEntity<>(director, HttpStatus.OK);
     }
 
-    @PutMapping("/director/{id}")
-    public ResponseEntity<DirectorDTO> updateDirector(@PathVariable Long id, @RequestBody UpdateDirectorDTO updateDirectorDTO) {
-        DirectorDTO updatedDirector = directorService.updateDirector(id, updateDirectorDTO);
-        return new ResponseEntity<>(updatedDirector, HttpStatus.OK);
+    @PutMapping("/{directorId}")
+    public ResponseEntity<String> updateDirector(@PathVariable Long schoolId,
+                                                 @PathVariable Long directorId,
+                                                 @RequestBody UpdateDirectorDTO updateDirectorDTO) {
+        directorService.updateDirector(schoolId, directorId, updateDirectorDTO);
+        return ResponseEntity.ok("Director updated successfully!");
     }
 
-    @DeleteMapping("/director/{id}")
-    public ResponseEntity<Void> deleteDirector(@PathVariable Long id) {
-        directorService.deleteDirector(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{directorId}")
+    public ResponseEntity<String> deleteDirector(@PathVariable Long schoolId,
+                                                 @PathVariable Long directorId) {
+        directorService.deleteDirector(schoolId, directorId);
+        return ResponseEntity.ok("Director deleted successfully!");
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/director/add-director")
-    public ResponseEntity<DirectorDTO> addDirector(@PathVariable Long schoolId, @RequestBody RegisterDTO createDirectorDTO){
-        DirectorDTO directorDTO = directorService.registerDirector(createDirectorDTO, schoolId);
-        return ResponseEntity.ok(directorDTO);
-    }
+
 
 
 }

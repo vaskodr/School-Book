@@ -50,14 +50,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO getStudentById(Long schoolId, Long classId, String userId) {
-        StudentEntity studentEntity = studentRepository.findByUserEntityIdAndStudentClassIdAndStudentClassSchoolId(userId, classId, schoolId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+    public StudentDetailsDTO getStudentById(Long schoolId, Long classId, Long studentId) {
+        StudentEntity studentEntity = studentRepository.findByStudentIdAndClassIdAndSchoolId(studentId, classId, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found!"));
 
-        StudentDTO studentDTO = studentMapper.mapToDTO(studentEntity);
-        studentDTO.setFirstName(studentEntity.getUserEntity().getFirstName());
-        studentDTO.setLastName(studentEntity.getUserEntity().getLastName());
-        return studentDTO;
+        return studentMapper.mapToDetailsDTO(studentEntity);
+
     }
 
     @Override
@@ -224,8 +222,6 @@ public class StudentServiceImpl implements StudentService {
     private void updateUserEntity(UserEntity userEntity, UpdateStudentDTO updateStudentDTO) {
         if (updateStudentDTO.getFirstName() != null) userEntity.setFirstName(updateStudentDTO.getFirstName());
         if (updateStudentDTO.getLastName() != null) userEntity.setLastName(updateStudentDTO.getLastName());
-        if (updateStudentDTO.getDateOfBirth() != null) userEntity.setDateOfBirth(updateStudentDTO.getDateOfBirth());
-        if (updateStudentDTO.getGender() != null) userEntity.setGender(updateStudentDTO.getGender());
         if (updateStudentDTO.getPhone() != null) userEntity.setPhone(updateStudentDTO.getPhone());
         if (updateStudentDTO.getEmail() != null) userEntity.setEmail(updateStudentDTO.getEmail());
         if (updateStudentDTO.getUsername() != null) userEntity.setUsername(updateStudentDTO.getUsername());

@@ -13,14 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DirectorDTO {
-    private Long id;
     private String firstName;
     private String lastName;
-    private LocalDate dateOfBirth;
-    private Gender gender;
-    private String phone;
-    private String email;
-    private String username;
-    private Long userId;
-    private Long schoolId;
+    private String schoolName;
 }

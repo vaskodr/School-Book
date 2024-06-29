@@ -17,6 +17,7 @@ import com.nbu.schoolbook.user.dto.RegisterDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,53 +37,53 @@ public class DirectorServiceImpl implements DirectorService {
     private final UserMapper userMapper;
 
     @Override
-    public DirectorDTO registerDirector(RegisterDTO registerDTO, Long schoolId) {
+    public void registerDirector(RegisterDTO registerDTO, Long schoolId) {
         UserEntity user = getUser(registerDTO, "ROLE_DIRECTOR");
         SchoolEntity school = schoolRepository.findById(schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
-        DirectorEntity director = createDirectorEntity(user, school);
-        return directorMapper.mapToDTO(director);
+        createDirectorEntity(user, school);
     }
 
     @Override
-    public DirectorDTO getDirectorById(Long id) {
-        DirectorEntity directorEntity = directorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Director not found"));
+    public DirectorDTO getDirectorById(Long schoolId, Long id) {
+        DirectorEntity directorEntity = directorRepository.findByIdAndSchoolId(id, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Director not found for the specified school"));
         return directorMapper.mapToDTO(directorEntity);
     }
 
-    @Override
-    public List<DirectorDTO> getAllDirectors() {
-        return directorRepository.findAll().stream()
-                .map(directorMapper::mapToDTO)
-                .collect(Collectors.toList());
-    }
+//    @Override
+//    public List<DirectorDTO> getAllDirectors() {
+//        return directorRepository.findAll().stream()
+//                .map(directorMapper::mapToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     @Override
-    public DirectorDTO updateDirector(Long id, UpdateDirectorDTO updateDirectorDTO) {
-        DirectorEntity directorEntity = directorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Director not found"));
+    @Transactional
+    public void updateDirector(Long schoolId, Long id, UpdateDirectorDTO updateDirectorDTO) {
+        DirectorEntity directorEntity = directorRepository.findByIdAndSchoolId(id, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Director not found for the specified school"));
 
         updateUserEntity(directorEntity.getUserEntity(), updateDirectorDTO);
         userRepository.save(directorEntity.getUserEntity());
 
-        if (updateDirectorDTO.getSchoolId() != null) {
+        if (updateDirectorDTO.getSchoolId() != null && !updateDirectorDTO.getSchoolId().equals(schoolId)) {
             SchoolEntity school = schoolRepository.findById(updateDirectorDTO.getSchoolId())
                     .orElseThrow(() -> new ResourceNotFoundException("School not found"));
             directorEntity.setSchool(school);
         }
 
         directorRepository.save(directorEntity);
-        return directorMapper.mapToDTO(directorEntity);
     }
 
     @Override
-    public void deleteDirector(Long id) {
-        if (!directorRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Director not found");
+    @Transactional
+    public void deleteDirector(Long schoolId, Long directorId) {
+        if (!directorRepository.existsByIdAndSchoolId(directorId, schoolId)) {
+            throw new ResourceNotFoundException("Director not found for the specified school");
         }
-        directorRepository.deleteById(id);
+        directorRepository.deleteById(directorId);
     }
 
     @Override
