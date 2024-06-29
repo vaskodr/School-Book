@@ -35,7 +35,7 @@ const AdminDashboard = () => {
     };
 
     const handleEditSchool = (schoolId) => {
-        navigate(`/admin/dashboard/school/${schoolId}/edit`);
+        navigate(`/admin/dashboard/school/${schoolId}/update`);
     };
 
     const handleDeleteSchool = async (schoolId) => {

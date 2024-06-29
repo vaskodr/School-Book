@@ -1,5 +1,4 @@
 import React from 'react';
-import NavigationBar from './UI/NavigationBar/NavigationBar';
 import './App.css';
 
 function App() {

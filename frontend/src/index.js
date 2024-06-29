@@ -12,10 +12,10 @@ import App from './App';
 import PrivateRoute from './Auth/PrivateRoute';
 import Layout from './UI/Layout'
 import CreateSchool from "./School/CreateSchool";
-import EditSchool from "./School/UpdateSchool";
 import CreateClass from "./Class/CreateClass";
 import UpdateClass from "./Class/UpdateClass";
 import SchoolTeachers from "./School/SchoolTeachers";
+import UpdateSchool from "./School/UpdateSchool";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -99,7 +99,7 @@ root.render(
                             path="/admin/dashboard/school/:schoolId/update"
                             element={
                                 <PrivateRoute roles={['ROLE_ADMIN']}>
-                                    <EditSchool />
+                                    <UpdateSchool />
                                 </PrivateRoute>
                             }
                         />
