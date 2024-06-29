@@ -73,19 +73,19 @@ public class SchoolController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{classId}/add-student")
-    public ResponseEntity<StudentDTO> addStudent(@PathVariable Long classId, @RequestBody RegisterDTO createStudentDTO){
-        StudentDTO studentDTO = schoolService.addStudent(createStudentDTO, classId);
-        return ResponseEntity.ok(studentDTO);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{schoolId}/add-teacher")
-    public ResponseEntity<TeacherDTO> addTeacher(@PathVariable Long schoolId, @RequestBody RegisterDTO createTeacherDTO){
-        TeacherDTO teacherDTO = schoolService.addTeacher(createTeacherDTO, schoolId);
-        return ResponseEntity.ok(teacherDTO);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/{classId}/add-student")
+//    public ResponseEntity<StudentDTO> addStudent(@PathVariable Long classId, @RequestBody RegisterDTO createStudentDTO){
+//        StudentDTO studentDTO = schoolService.addStudent(createStudentDTO, classId);
+//        return ResponseEntity.ok(studentDTO);
+//    }
+//
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/{schoolId}/add-teacher")
+//    public ResponseEntity<TeacherDTO> addTeacher(@PathVariable Long schoolId, @RequestBody RegisterDTO createTeacherDTO){
+//        TeacherDTO teacherDTO = schoolService.addTeacher(createTeacherDTO, schoolId);
+//        return ResponseEntity.ok(teacherDTO);
+//    }
 
 //    @PreAuthorize("hasRole('ADMIN')")
 //    @PostMapping("/{studentId}/add-parent")
@@ -93,12 +93,12 @@ public class SchoolController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{schoolId}/add-director")
-    public ResponseEntity<DirectorDTO> addDirector(@PathVariable Long schoolId, @RequestBody RegisterDTO createDirectorDTO){
-        DirectorDTO directorDTO = schoolService.addDirector(createDirectorDTO, schoolId);
-        return ResponseEntity.ok(directorDTO);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/{schoolId}/add-director")
+//    public ResponseEntity<DirectorDTO> addDirector(@PathVariable Long schoolId, @RequestBody RegisterDTO createDirectorDTO){
+//        DirectorDTO directorDTO = schoolService.addDirector(createDirectorDTO, schoolId);
+//        return ResponseEntity.ok(directorDTO);
+//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{schoolId}/add-class")

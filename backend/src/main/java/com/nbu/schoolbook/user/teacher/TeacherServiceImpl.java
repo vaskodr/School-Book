@@ -93,6 +93,8 @@ public class TeacherServiceImpl implements TeacherService {
         teacherRepository.deleteById(id);
     }
 
+
+
     @Override
     public void assignClassMentor(TeacherEntity teacher, ClassEntity mentorClass) {
         mentorClass.setMentor(teacher);
