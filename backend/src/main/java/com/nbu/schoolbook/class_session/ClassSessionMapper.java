@@ -1,6 +1,11 @@
 package com.nbu.schoolbook.class_session;
 import com.nbu.schoolbook.class_session.dto.ClassSessionDTO;
 import com.nbu.schoolbook.class_session.dto.CreateClassSessionDTO;
+import com.nbu.schoolbook.class_session.dto.SessionDTO;
+import com.nbu.schoolbook.subject.SubjectRepository;
+import com.nbu.schoolbook.subject.SubjectServiceImpl;
+import com.nbu.schoolbook.user.teacher.TeacherRepository;
+import com.nbu.schoolbook.user.teacher.TeacherServiceImpl;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -25,5 +30,4 @@ public class ClassSessionMapper {
     public ClassSessionDTO mapCreateToDTO(CreateClassSessionDTO createClassSessionDTO) {
         return modelMapper.map(createClassSessionDTO, ClassSessionDTO.class);
     }
-
 }

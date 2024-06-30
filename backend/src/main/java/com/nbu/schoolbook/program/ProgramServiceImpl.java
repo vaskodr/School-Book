@@ -8,28 +8,22 @@ import com.nbu.schoolbook.class_session.ClassSessionRepository;
 import com.nbu.schoolbook.class_session.ClassSessionService;
 import com.nbu.schoolbook.class_session.dto.ClassSessionDTO;
 import com.nbu.schoolbook.class_session.dto.CreateClassSessionDTO;
-import com.nbu.schoolbook.class_session.dto.UpdateClassSessionDTO;
+import com.nbu.schoolbook.class_session.dto.SessionDTO;
+import com.nbu.schoolbook.class_session.dto.TeacherSessionDTO;
+import com.nbu.schoolbook.enums.DayOfWeek;
 import com.nbu.schoolbook.exception.ResourceNotFoundException;
-import com.nbu.schoolbook.program.dto.CreateProgramDTO;
-import com.nbu.schoolbook.program.dto.ProgramDTO;
-import com.nbu.schoolbook.program.dto.UpdateProgramDTO;
-import com.nbu.schoolbook.school.SchoolEntity;
+import com.nbu.schoolbook.program.dto.*;
 import com.nbu.schoolbook.school.SchoolRepository;
 import com.nbu.schoolbook.subject.SubjectRepository;
+import com.nbu.schoolbook.user.UserRepository;
+import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
-
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 @AllArgsConstructor
 @Service
@@ -45,6 +39,7 @@ public class ProgramServiceImpl implements ProgramService {
     private final SubjectRepository subjectRepository;
     private final ClassSessionMapper classSessionMapper;
     private final ClassSessionRepository classSessionRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -140,5 +135,55 @@ public class ProgramServiceImpl implements ProgramService {
         ProgramEntity programEntity = programRepository.findByIdAndAssociatedClassSchoolIdAndAssociatedClassId(programId, schoolId, classId)
                 .orElseThrow(() -> new RuntimeException("Program not found for the given school and class"));
         programRepository.delete(programEntity);
+    }
+
+    @Override
+    @Transactional
+    public WeeklyProgramDTO getWeeklyProgramForStudent(Long schoolId, Long studentId) {
+        ProgramEntity programEntity = programRepository.findByAssociatedClassSchoolIdAndAssociatedClassStudentsId(schoolId, studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Program not found"));
+
+        Map<DayOfWeek, List<ClassSessionEntity>> sessionsByDay = programEntity.getClassSessions().stream()
+                .collect(Collectors.groupingBy(ClassSessionEntity::getDay));
+
+        Map<DayOfWeek, List<SessionDTO>> sessionsByDayDTO = sessionsByDay.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(session -> new SessionDTO(
+                                        session.getStartTime(),
+                                        session.getEndTime(),
+                                        new String(userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getFirstName() + " " + userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getLastName()),
+                                        session.getSubject().getName()
+                                ))
+                                .collect(Collectors.toList())
+                ));
+
+        return new WeeklyProgramDTO(sessionsByDayDTO);
+    }
+
+    @Override
+    public WeeklyTeacherProgramDTO getWeeklyProgramForTeacher(Long schoolId, Long teacherId) {
+        TeacherEntity teacherEntity = teacherRepository.findByIdAndSchoolId(teacherId, schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found for school id: " + schoolId + " and teacher id: " + teacherId));
+
+        Map<DayOfWeek, List<ClassSessionEntity>> sessionsByDay = teacherEntity.getClassSessions().stream()
+                .collect(Collectors.groupingBy(ClassSessionEntity::getDay));
+
+        Map<DayOfWeek, List<TeacherSessionDTO>> sessionsByDayDTO = sessionsByDay.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(session -> new TeacherSessionDTO(
+                                        session.getStartTime(),
+                                        session.getEndTime(),
+                                        session.getSubject().getName(),
+                                        session.getProgram().getAssociatedClass().getName(),
+                                        session.getProgram().getAssociatedClass().getLevel()
+                                ))
+                                .collect(Collectors.toList())
+                ));
+
+        return new WeeklyTeacherProgramDTO(sessionsByDayDTO);
     }
 }

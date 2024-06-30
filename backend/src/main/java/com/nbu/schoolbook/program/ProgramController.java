@@ -1,8 +1,6 @@
 package com.nbu.schoolbook.program;
 
-import com.nbu.schoolbook.program.dto.CreateProgramDTO;
-import com.nbu.schoolbook.program.dto.ProgramDTO;
-import com.nbu.schoolbook.program.dto.UpdateProgramDTO;
+import com.nbu.schoolbook.program.dto.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,5 +71,17 @@ public class ProgramController {
                                                 @PathVariable Long programId) {
         programService.deleteProgram(schoolId, classId, programId);
         return ResponseEntity.ok("Program deleted successfully!");
+    }
+
+    @GetMapping("/student/{studentId}/weekly-program")
+    public ResponseEntity<WeeklyProgramDTO> getWeeklyProgramForStudent(@PathVariable Long schoolId, @PathVariable Long studentId) {
+        WeeklyProgramDTO weeklyProgram = programService.getWeeklyProgramForStudent(schoolId, studentId);
+        return ResponseEntity.ok(weeklyProgram);
+    }
+
+    @GetMapping("/teacher/{teacherId}/weekly-program")
+    public ResponseEntity<WeeklyTeacherProgramDTO> getWeeklyProgramForTeacher(@PathVariable Long schoolId, @PathVariable Long teacherId) {
+        WeeklyTeacherProgramDTO weeklyProgram = programService.getWeeklyProgramForTeacher(schoolId, teacherId);
+        return ResponseEntity.ok(weeklyProgram);
     }
 }

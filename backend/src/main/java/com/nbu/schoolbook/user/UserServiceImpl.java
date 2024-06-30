@@ -152,44 +152,4 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
-
-//    public SchoolDTO getSchoolByUserId(String userId) {
-//        TeacherEntity teacher = teacherRepository.findByUserEntityId(userId);
-//        if (teacher != null) {
-//            return schoolMapper.mapToDTO(teacher.getSchool());
-//        }
-//
-//        StudentEntity student = studentRepository.findByUserEntityId(userId);
-//        if (student != null) {
-//            return schoolMapper.mapToDTO(student.getStudentClass().getSchool());
-//        }
-//
-////        ParentEntity parent = parentRepository.findByUserEntityId(userId);
-////        if (parent != null) {
-////            return schoolMapper.mapToDTO(parent)
-////        }
-//
-//        DirectorEntity director = directorRepository.findByUserEntityId(userId);
-//        if (director != null) {
-//            return schoolMapper.mapToDTO(director.getSchool());
-//        }
-//
-//        return null; // Or throw an appropriate exception
-//    }
-//
-//
-//    public UserDetailsDTO getUserDetails(String userId) {
-//        UserEntity userEntity = userRepository.findById(userId)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
-//
-//        UserDetailsDTO userDTO = new UserDetailsDTO();
-//        userDTO.setId(userEntity.getId());
-//        userDTO.setUsername(userEntity.getUsername());
-//        userDTO.setEmail(userEntity.getEmail());
-//        userDTO.setFirstName(userEntity.getFirstName());
-//        userDTO.setLastName(userEntity.getLastName());
-//        userDTO.setSchoolId();
-//
-//        return userDTO;
-//    }
 }

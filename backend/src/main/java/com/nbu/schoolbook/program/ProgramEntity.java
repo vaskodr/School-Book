@@ -25,7 +25,7 @@ public class ProgramEntity {
     private ClassEntity associatedClass;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ClassSessionEntity> classSessions = new HashSet<>();
+    private Set<ClassSessionEntity> classSessions;
 
 
 

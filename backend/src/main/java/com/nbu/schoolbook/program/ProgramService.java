@@ -1,8 +1,7 @@
 package com.nbu.schoolbook.program;
 
-import com.nbu.schoolbook.program.dto.CreateProgramDTO;
-import com.nbu.schoolbook.program.dto.ProgramDTO;
-import com.nbu.schoolbook.program.dto.UpdateProgramDTO;
+import com.nbu.schoolbook.program.dto.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,4 +15,7 @@ public interface ProgramService {
     void deleteProgram(Long schoolId, Long classId, Long programId);
 
 
+    WeeklyProgramDTO getWeeklyProgramForStudent(Long schoolId, Long studentId);
+
+    WeeklyTeacherProgramDTO getWeeklyProgramForTeacher(Long schoolId, Long teacherId);
 }

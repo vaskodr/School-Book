@@ -10,7 +10,8 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClassSessionDTO {
+public class
+ClassSessionDTO {
     private Long id;
     private DayOfWeek day;
     private LocalTime startTime;
