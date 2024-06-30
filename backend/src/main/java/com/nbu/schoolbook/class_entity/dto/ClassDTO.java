@@ -10,5 +10,6 @@ public class ClassDTO {
     private Long id;
     private String name;
     private ClassLevel level;
+    private Long schoolId;
     private String schoolName;
 }

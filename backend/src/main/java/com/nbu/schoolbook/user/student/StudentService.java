@@ -11,6 +11,7 @@ public interface StudentService {
     StudentDetailsDTO getStudentById(Long schoolId, Long classId, Long studentId);
     List<StudentDTO> getAllStudents(Long schoolId, Long classId);
     StudentDetailsDTO getStudentDetails(StudentEntity student);
+    StudentDTO getStudentDetailsById(Long studentId);
     void updateStudent(Long schoolId, Long classId, Long studentId, UpdateStudentDTO updateStudentDTO);
     void deleteStudent(Long schoolId, Long classId, Long studentId);
 

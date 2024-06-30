@@ -84,6 +84,13 @@ public class StudentServiceImpl implements StudentService {
 
         return studentDetailsDTO;
     }
+    public StudentDTO getStudentDetailsById(Long studentId) {
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        return studentMapper.mapToDTO(student);
+    }
+
 
     @Override
     @Transactional

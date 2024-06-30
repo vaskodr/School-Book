@@ -38,7 +38,23 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public void registerDirector(RegisterDTO registerDTO, Long schoolId) {
-        UserEntity user = getUser(registerDTO, "ROLE_DIRECTOR");
+        Optional<UserEntity> userOptional = userRepository.findById(registerDTO.getId());
+
+        UserEntity user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            RoleEntity directorRole = roleRepository.findByName("ROLE_DIRECTOR");
+            if (directorRole == null) {
+                throw new RuntimeException("Director role not found!");
+            }
+            if (!user.getRoles().contains(directorRole)) {
+                user.getRoles().add(directorRole);
+                userRepository.save(user);
+            }
+        } else {
+            user = getUser(registerDTO, "ROLE_DIRECTOR");
+        }
+
         SchoolEntity school = schoolRepository.findById(schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 

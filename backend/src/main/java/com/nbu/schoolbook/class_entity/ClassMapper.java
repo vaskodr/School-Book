@@ -15,6 +15,7 @@ public class ClassMapper {
         classDTO.setId(classEntity.getId());
         classDTO.setName(classEntity.getName());
         classDTO.setLevel(classEntity.getLevel());
+        classDTO.setSchoolId(classEntity.getSchool().getId());
         classDTO.setSchoolName(classEntity.getSchool().getName());
         return classDTO;
     }
