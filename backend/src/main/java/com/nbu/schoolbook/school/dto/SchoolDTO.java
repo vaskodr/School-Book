@@ -15,4 +15,5 @@ public class SchoolDTO {
     private Long id;
     private String name;
     private String address;
+    private Long directorId;
 }

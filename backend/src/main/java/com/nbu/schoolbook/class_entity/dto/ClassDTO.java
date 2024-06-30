@@ -1,6 +1,7 @@
 package com.nbu.schoolbook.class_entity.dto;
 
 import com.nbu.schoolbook.enums.ClassLevel;
+import jakarta.annotation.Nullable;
 import lombok.Data;
 
 import java.util.Set;
@@ -12,4 +13,8 @@ public class ClassDTO {
     private ClassLevel level;
     private Long schoolId;
     private String schoolName;
+//    @Nullable
+//    private Long directorId;
+//    @Nullable
+//    private String directorName;
 }

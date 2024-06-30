@@ -49,6 +49,18 @@ public class DirectorController {
         return ResponseEntity.ok("Director deleted successfully!");
     }
 
+    @PostMapping("/{directorId}/assign-director")
+    public ResponseEntity<String> assignDirectorToSchool(@PathVariable Long schoolId, @PathVariable Long directorId) {
+        directorService.assignDirectorToSchool(directorId, schoolId);
+        return ResponseEntity.ok("Director assigned to school successfully");
+    }
+
+    @PostMapping("/{directorId}/unassign-director")
+    public ResponseEntity<String> unassignDirectorFromSchool(@PathVariable Long schoolId, @PathVariable Long directorId) {
+        directorService.unassignDirectorFromSchool(directorId, schoolId);
+        return ResponseEntity.ok("Director unassigned from school successfully");
+    }
+
 
 
 

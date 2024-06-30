@@ -18,7 +18,7 @@ public class DirectorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne()
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 

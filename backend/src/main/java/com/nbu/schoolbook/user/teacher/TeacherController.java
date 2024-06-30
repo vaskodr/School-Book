@@ -19,9 +19,9 @@ public class TeacherController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-teacher")
-    public ResponseEntity<TeacherDTO> addTeacher(@PathVariable Long schoolId, @RequestBody RegisterDTO createTeacherDTO){
-        TeacherDTO teacherDTO = teacherService.registerTeacher(createTeacherDTO, schoolId);
-        return ResponseEntity.ok(teacherDTO);
+    public ResponseEntity<String> addTeacher(@PathVariable Long schoolId, @RequestBody RegisterDTO createTeacherDTO){
+        teacherService.registerTeacher(createTeacherDTO, schoolId);
+        return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/{teacherId}")

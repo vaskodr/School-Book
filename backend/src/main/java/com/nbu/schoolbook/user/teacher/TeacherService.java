@@ -8,7 +8,7 @@ import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
 import java.util.List;
 
 public interface TeacherService {
-    TeacherDTO registerTeacher(RegisterDTO registerDTO, Long schoolId);
+    void registerTeacher(RegisterDTO registerDTO, Long schoolId);
     TeacherDTO getTeacherById(Long schoolId, Long teacherId);
     List<TeacherDTO> getAllTeachersBySchoolId(Long schoolId);
     void updateTeacher(Long schoolId, Long teacherId, UpdateTeacherDTO updateTeacherDTO);

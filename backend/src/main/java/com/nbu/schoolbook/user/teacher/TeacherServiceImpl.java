@@ -20,8 +20,11 @@ import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,21 +45,48 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherMapper teacherMapper;
     private final ClassRepository classRepository;
     private final SchoolRepository schoolRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TeacherServiceImpl.class);
 
     @Override
-    public TeacherDTO registerTeacher(RegisterDTO registerDTO, Long schoolId) {
+    @Transactional
+    public void registerTeacher(RegisterDTO registerDTO, Long schoolId) {
+        logger.info("Starting registerTeacher method");
+
         SchoolEntity school = getSchoolEntity(schoolId);
+        if (school == null) {
+            logger.error("School not found for id: " + schoolId);
+            throw new ResourceNotFoundException("School not found for id: " + schoolId);
+        }
+        logger.info("School found: " + school.getName());
+
         ClassEntity mentorClass = getClassIfProvided(registerDTO);
+        if (mentorClass != null) {
+            logger.info("Mentor class provided: " + mentorClass.getName());
+        }
+
         UserEntity user = getUser(registerDTO, "ROLE_TEACHER");
+        if (user == null) {
+            logger.error("User could not be created or found for registration DTO: " + registerDTO);
+            throw new RuntimeException("User could not be created or found");
+        }
+        logger.info("User created/found: " + user.getUsername());
+
         TeacherEntity teacher = createTeacherEntity(user, school);
+        if (teacher == null) {
+            logger.error("Teacher entity could not be created for user: " + user.getUsername());
+            throw new RuntimeException("Teacher entity could not be created");
+        }
+        logger.info("Teacher entity created for user: " + user.getUsername());
 
         if (mentorClass != null) {
             assignClassMentor(teacher, mentorClass);
+            logger.info("Assigned mentor class to teacher: " + mentorClass.getName());
         }
 
         handleSubjectAssociation(registerDTO, teacher);
+        logger.info("Handled subject association for teacher: " + teacher.getUserEntity().getUsername());
 
-        return teacherMapper.mapEntityToDTO(teacher);
+        logger.info("Completed registerTeacher method");
     }
 
     @Override

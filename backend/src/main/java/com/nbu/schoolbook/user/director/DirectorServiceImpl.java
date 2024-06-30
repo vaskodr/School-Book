@@ -14,6 +14,7 @@ import com.nbu.schoolbook.user.director.dto.CreateDirectorDTO;
 import com.nbu.schoolbook.user.director.dto.DirectorDTO;
 import com.nbu.schoolbook.user.director.dto.UpdateDirectorDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class DirectorServiceImpl implements DirectorService {
     private final SchoolRepository schoolRepository;
     private final DirectorMapper directorMapper;
     private final UserMapper userMapper;
+    private final EntityManager entityManager;
 
     @Override
     public void registerDirector(RegisterDTO registerDTO, Long schoolId) {
@@ -93,13 +95,24 @@ public class DirectorServiceImpl implements DirectorService {
         directorRepository.save(directorEntity);
     }
 
+
     @Override
     @Transactional
     public void deleteDirector(Long schoolId, Long directorId) {
         if (!directorRepository.existsByIdAndSchoolId(directorId, schoolId)) {
             throw new ResourceNotFoundException("Director not found for the specified school");
         }
-        directorRepository.deleteById(directorId);
+
+        DirectorEntity director = directorRepository.findById(directorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Director not found"));
+
+        UserEntity user = director.getUserEntity();
+
+        // Detach the director from the user to avoid any unintended actions
+        director.setUserEntity(null);
+        directorRepository.save(director); // Save the changes to detach the user
+
+        directorRepository.delete(director); // Now delete the director entity
     }
 
     @Override
@@ -123,13 +136,11 @@ public class DirectorServiceImpl implements DirectorService {
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
 
-        director.setSchool(null);
-        directorRepository.save(director);
-
         school.setDirector(null);
         schoolRepository.save(school);
 
-
+        director.setSchool(null);
+        directorRepository.save(director);
     }
 
     private UserEntity getUser(RegisterDTO registerDTO, String roleName) {

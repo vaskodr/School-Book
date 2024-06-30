@@ -30,6 +30,7 @@ const RegisterTeacher = () => {
                 });
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Fetched subjects:', data); // Debugging line
                     setSubjects(data);
                 } else {
                     console.error('Failed to fetch subjects');
@@ -106,20 +107,24 @@ const RegisterTeacher = () => {
                 ))}
                 <div className="mb-3">
                     <label className="form-label">Subjects</label>
-                    {subjects.map((subject) => (
-                        <div className="form-check" key={subject.id}>
-                            <input
-                                type="checkbox"
-                                className="form-check-input"
-                                id={`subject-${subject.id}`}
-                                checked={teacherData.subjectIds.includes(subject.id)}
-                                onChange={() => handleCheckboxChange(subject.id)}
-                            />
-                            <label className="form-check-label" htmlFor={`subject-${subject.id}`}>
-                                {subject.name}
-                            </label>
-                        </div>
-                    ))}
+                    {subjects.length === 0 ? (
+                        <p>No subjects available.</p>
+                    ) : (
+                        subjects.map((subject) => (
+                            <div className="form-check" key={subject.id}>
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id={`subject-${subject.id}`}
+                                    checked={teacherData.subjectIds.includes(subject.id)}
+                                    onChange={() => handleCheckboxChange(subject.id)}
+                                />
+                                <label className="form-check-label" htmlFor={`subject-${subject.id}`}>
+                                    {subject.name}
+                                </label>
+                            </div>
+                        ))
+                    )}
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
