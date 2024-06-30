@@ -1,13 +1,14 @@
 package com.nbu.schoolbook.user.student;
 
-import com.nbu.schoolbook.user.student.dto.StudentDTO;
-import com.nbu.schoolbook.user.student.dto.StudentDetailsDTO;
-import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nbu.schoolbook.user.student.dto.StudentDTO;
+
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/student")
@@ -18,6 +19,12 @@ public class DetailsController {
     @GetMapping("/{studentId}/details")
     public ResponseEntity<StudentDTO> getStudentDetails(@PathVariable Long studentId) {
         StudentDTO studentDTO = studentService.getStudentDetailsById(studentId);
+        return ResponseEntity.ok(studentDTO);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<StudentDTO> getStudentByUserID(@PathVariable String userId) {
+        StudentDTO studentDTO = studentService.getStudentByUserID(userId);
         return ResponseEntity.ok(studentDTO);
     }
 }

@@ -1,5 +1,14 @@
 package com.nbu.schoolbook.user.student;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.nbu.schoolbook.class_entity.ClassEntity;
 import com.nbu.schoolbook.class_entity.ClassRepository;
 import com.nbu.schoolbook.class_entity.dto.ClassDTO;
@@ -9,7 +18,6 @@ import com.nbu.schoolbook.role.RoleRepository;
 import com.nbu.schoolbook.user.UserEntity;
 import com.nbu.schoolbook.user.UserMapper;
 import com.nbu.schoolbook.user.UserRepository;
-import com.nbu.schoolbook.user.UserService;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.parent.ParentEntity;
 import com.nbu.schoolbook.user.parent.ParentMapper;
@@ -18,13 +26,8 @@ import com.nbu.schoolbook.user.student.dto.StudentClassDTO;
 import com.nbu.schoolbook.user.student.dto.StudentDTO;
 import com.nbu.schoolbook.user.student.dto.StudentDetailsDTO;
 import com.nbu.schoolbook.user.student.dto.UpdateStudentDTO;
-import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
@@ -149,15 +152,23 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-    public StudentClassDTO getStudentByUserId(String userId) {
+    @Override
+    public StudentClassDTO getStudentClassByUserId(String userId) {
         StudentEntity studentEntity = studentRepository.findByUserEntityId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found for user id: " + userId));
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found!"));
         StudentClassDTO studentDTO = new StudentClassDTO();
         studentDTO.setId(studentEntity.getId());
         ClassDTO classDTO = getClassByStudentId(studentEntity.getId());
         studentDTO.setClassDTO(classDTO);
         return studentDTO;
+    }
+
+    @Override
+    public StudentDTO getStudentByUserID(String userId) {
+        StudentEntity student = studentRepository.findByUserEntityId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user ID: " + userId));
+
+        return studentMapper.mapToDTO(student);
     }
 
     public ClassDTO getClassByStudentId(Long studentId) {

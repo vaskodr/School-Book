@@ -1,10 +1,12 @@
 package com.nbu.schoolbook.user.student;
 
-import com.nbu.schoolbook.user.dto.RegisterDTO;
-import com.nbu.schoolbook.user.parent.ParentEntity;
-import com.nbu.schoolbook.user.student.dto.*;
-
 import java.util.List;
+
+import com.nbu.schoolbook.user.dto.RegisterDTO;
+import com.nbu.schoolbook.user.student.dto.StudentClassDTO;
+import com.nbu.schoolbook.user.student.dto.StudentDTO;
+import com.nbu.schoolbook.user.student.dto.StudentDetailsDTO;
+import com.nbu.schoolbook.user.student.dto.UpdateStudentDTO;
 
 public interface StudentService {
     void registerStudent(RegisterDTO registerDTO, Long schoolId, Long classId);
@@ -20,7 +22,7 @@ public interface StudentService {
     void enrollStudent(Long studentId, Long classId);
     void unenrollStudent(Long studentId, Long classId);
 
-    StudentClassDTO getStudentByUserId(String userId);
-
+    StudentClassDTO getStudentClassByUserId(String userId);
+    StudentDTO getStudentByUserID(String userId);
 
 }

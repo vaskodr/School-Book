@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Auth/AuthContext';
+import StudentButtons from '../UI/Student/StudentButtons/StudentButtons';
+import StudentInfo from '../UI/Student/StudentInfo/StudentInfo';
 
 const ParentDashboard = () => {
   const { authData } = useAuth();
   const [children, setChildren] = useState([]);
-  const navigate = useNavigate();
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     const fetchChildren = async () => {
@@ -23,7 +24,6 @@ const ParentDashboard = () => {
         if (response.ok) {
           const data = await response.json();
           setChildren(data);
-          console.log(data);
         } else {
           console.error('Failed to fetch children data');
         }
@@ -35,24 +35,41 @@ const ParentDashboard = () => {
     fetchChildren();
   }, [authData]);
 
-  const handleStudentClick = (studentId) => {
-    navigate(`/parent/dashboard/student/${studentId}/dashboard`);
+  const handleStudentClick = (student) => {
+    setSelectedStudent(student);
   };
+
+  const { firstName, lastName } = authData.userDetailsDTO;
 
   return (
     <div>
       <h1>Parent Dashboard</h1>
+      <h1>Welcome {firstName} {lastName}</h1>
       <p>Select a student to view their information:</p>
       <ul>
         {children.map((student) => (
           <li key={student.id}>
-            <button onClick={() => handleStudentClick(student.id)}>
+            <button onClick={() => handleStudentClick(student)}>
               {student.firstName} {student.lastName}
             </button>
           </li>
         ))}
       </ul>
-      <Outlet/>
+      {selectedStudent && (
+        <div>
+          <StudentInfo
+            firstName={selectedStudent.firstName}
+            lastName={selectedStudent.lastName}
+            classDTO={selectedStudent.classDTO}
+          />
+          <StudentButtons
+            schoolId={selectedStudent.classDTO.schoolId}
+            classId={selectedStudent.classDTO.id}
+            authData={authData}
+            studentId={selectedStudent.id}
+          />
+        </div>
+      )}
     </div>
   );
 };
