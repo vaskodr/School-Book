@@ -1,14 +1,16 @@
 package com.nbu.schoolbook.user.parent;
 
-import com.nbu.schoolbook.user.student.dto.StudentDTO;
-import lombok.AllArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.nbu.schoolbook.user.student.dto.StudentDTO;
+
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
@@ -16,9 +18,9 @@ import java.util.List;
 public class ParentController {
     private final ParentService parentService;
 
-    @GetMapping("/{parentId}/children")
-    public ResponseEntity<List<StudentDTO>> getParentChildren(@PathVariable Long parentId) {
-        List<StudentDTO> studentDTOS = parentService.getParentChildren(parentId);
+    @GetMapping("/{userId}/children")
+    public ResponseEntity<List<StudentDTO>> getParentChildren(@PathVariable String userId) {
+        List<StudentDTO> studentDTOS = parentService.getParentChildrenByUserId(userId);
         return ResponseEntity.ok(studentDTOS);
     }
 }

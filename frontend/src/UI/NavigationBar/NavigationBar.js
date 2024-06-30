@@ -29,13 +29,19 @@ const NavigationBar = () => {
       ) : (
         <>
           {authData.roles.includes('ROLE_ADMIN') && (
-            <button className="navbar-button" onClick={() => navigate('/admin/dashboard')}>Admin Home</button>
+            <button className="navbar-button" onClick={() => navigate('/admin/dashboard')}>Admin Dashboard</button>
           )}
-          {authData.roles.includes('ROLE_STUDENT') && (
-            <button className="navbar-button" onClick={() => navigate(`/student/dashboard/${authData.userDetailsDTO.schoolId}`)}>Student Home</button>
+          {authData.roles.includes('ROLE_DIRECTOR') && (
+            <button className="navbar-button" onClick={() => navigate(`/director/dashboard/${authData.userDetailsDTO.schoolId}`)}>Director Dashboard</button>
           )}
           {authData.roles.includes('ROLE_TEACHER') && (
-            <button className="navbar-button" onClick={() => navigate(`/teacher/dashboard/${authData.userDetailsDTO.schoolId}`)}>Teacher Home</button>
+            <button className="navbar-button" onClick={() => navigate(`/teacher/dashboard/${authData.userDetailsDTO.schoolId}`)}>Teacher Dashboard</button>
+          )}
+          {authData.roles.includes('ROLE_PARENT') && (
+            <button className="navbar-button" onClick={() => navigate(`/parent/dashboard`)}>Parent Dashboard</button>
+          )}
+          {authData.roles.includes('ROLE_STUDENT') && (
+            <button className="navbar-button" onClick={() => navigate(`/student/dashboard/${authData.userDetailsDTO.schoolId}`)}>Student Dashboard</button>
           )}
           <button className="navbar-button" onClick={handleLogoutClick}>Logout</button>
         </>

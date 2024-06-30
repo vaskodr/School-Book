@@ -31,11 +31,17 @@ const LoginModal = ({ onClose }) => {
                 if (data.roles.includes("ROLE_ADMIN")) {
                     navigate(`/admin/dashboard`);
                 }
-                if (data.roles.includes("ROLE_STUDENT")) {
-                    navigate(`/student/dashboard/${data.userDetailsDTO.schoolId}`);
+                if (data.roles.includes("ROLE_DIRECTOR")) {
+                    navigate(`/director/dashboard/${data.userDetailsDTO.schoolId}`)
                 }
                 if (data.roles.includes("ROLE_TEACHER")) {
                     navigate(`/teacher/dashboard/${data.userDetailsDTO.schoolId}`)
+                }
+                if (data.roles.includes("ROLE_PARENT")) {
+                    navigate(`/parent/dashboard`)
+                }
+                if (data.roles.includes("ROLE_STUDENT")) {
+                    navigate(`/student/dashboard/${data.userDetailsDTO.schoolId}`);
                 }
 
             } else {
