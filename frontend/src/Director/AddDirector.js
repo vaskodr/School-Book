@@ -1,5 +1,4 @@
-// src/School/AddDirector.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
 import { Form, Button, Row, Col } from 'react-bootstrap';
@@ -20,6 +19,41 @@ const AddDirector = () => {
     });
     const { authData } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (directorData.id) {
+            fetchUserData(directorData.id);
+        }
+    }, [directorData.id]);
+
+    const fetchUserData = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/user/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${authData.accessToken}`,
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setDirectorData({
+                    ...directorData,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    dateOfBirth: data.dateOfBirth,
+                    gender: data.gender,
+                    phone: data.phone,
+                    email: data.email,
+                    username: data.username,
+                    // Do not set the password from fetched data
+                    password: ''
+                });
+            } else {
+                console.error('User not found');
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

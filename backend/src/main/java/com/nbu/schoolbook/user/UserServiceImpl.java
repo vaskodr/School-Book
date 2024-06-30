@@ -60,14 +60,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserById(String id) {
+    public RegisterDTO getUserById(String id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
                                 "User not found with id: " + id
                         )
                 );
-        return userMapper.mapToDTO(user);
+        return userMapper.mapToRegisterDTO(user);
     }
 
     @Override

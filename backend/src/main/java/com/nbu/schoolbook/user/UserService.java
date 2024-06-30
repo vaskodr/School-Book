@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface UserService {
     RegisterDTO createUser(RegisterDTO registerDTO);
-    UserDTO getUserById(String id);
+    RegisterDTO getUserById(String id);
     List<UserDTO> getAllUsers();
     UpdateUserDTO updateUser(String id, UpdateUserDTO userDTO);
     void deleteUser(String id);

@@ -96,7 +96,7 @@ class UserServiceTest {
         userDTO.setId("1234567890");
         when(userMapper.mapToDTO(userEntity)).thenReturn(userDTO);
 
-        UserDTO result = userService.getUserById("1234567890");
+        RegisterDTO result = userService.getUserById("1234567890");
 
         assertEquals(userDTO, result);
     }

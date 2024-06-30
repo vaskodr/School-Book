@@ -19,10 +19,9 @@ import java.security.Principal;
 import java.util.List;
 
 
-@CrossOrigin("*")
 @AllArgsConstructor
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("/api/user")
 public class UserController {
     private UserService userService;
 
@@ -32,10 +31,10 @@ public class UserController {
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") String id) {
-        UserDTO userDTO = userService.getUserById(id);
-        return ResponseEntity.ok(userDTO);
+    @GetMapping("/{userId}")
+    public ResponseEntity<RegisterDTO> getUserById(@PathVariable("userId") String id) {
+        RegisterDTO registerDTO = userService.getUserById(id);
+        return ResponseEntity.ok(registerDTO);
     }
 
     @GetMapping("/list")
