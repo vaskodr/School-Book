@@ -20,6 +20,11 @@ public class TeacherDTO {
     private Long id;
     private String firstName;
     private String lastName;
+    private LocalDate dateOfBirth;
+    private Gender gender;
+    private String phone;
+    private String email;
+    private String username;
     private List<String> subjectNames;
     private String schoolName;
     @Nullable

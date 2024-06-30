@@ -2,8 +2,6 @@ package com.nbu.schoolbook.user.teacher;
 
 import com.nbu.schoolbook.class_entity.ClassEntity;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
-import com.nbu.schoolbook.user.teacher.dto.CreateTeacherDTO;
-import com.nbu.schoolbook.user.teacher.dto.ListTeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
 

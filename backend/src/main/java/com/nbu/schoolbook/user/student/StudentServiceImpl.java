@@ -12,6 +12,7 @@ import com.nbu.schoolbook.user.UserRepository;
 import com.nbu.schoolbook.user.UserService;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.parent.ParentEntity;
+import com.nbu.schoolbook.user.parent.ParentMapper;
 import com.nbu.schoolbook.user.parent.ParentRepository;
 import com.nbu.schoolbook.user.student.dto.StudentClassDTO;
 import com.nbu.schoolbook.user.student.dto.StudentDTO;
@@ -37,6 +38,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentMapper studentMapper;
     private final UserMapper userMapper;
     private final ParentRepository parentRepository;
+    private final ParentMapper parentMapper;
 
     @Override
     public void registerStudent(RegisterDTO registerDTO, Long schoolId, Long classId) {
@@ -64,6 +66,23 @@ public class StudentServiceImpl implements StudentService {
         return students.stream()
                 .map(studentMapper::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentDetailsDTO getStudentDetails(StudentEntity student) {
+        StudentDetailsDTO studentDetailsDTO = studentMapper.mapToDetailsDTO(student);
+
+        if (student.getParents() != null) {
+            studentDetailsDTO.setParents(
+                    student.getParents().stream()
+                            .map(parentMapper::mapToDTO)
+                            .collect(Collectors.toList())
+            );
+        } else {
+            studentDetailsDTO.setParents(null);
+        }
+
+        return studentDetailsDTO;
     }
 
     @Override
@@ -194,10 +213,34 @@ public class StudentServiceImpl implements StudentService {
             ParentEntity parent;
             if (parentOptional.isPresent()) {
                 UserEntity parentUser = parentOptional.get();
+
+                // Check if the user already has the parent role
+                boolean hasParentRole = parentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ROLE_PARENT"));
+
+                if (!hasParentRole) {
+                    // Add parent role to the user if they don't have it yet
+                    RoleEntity parentRole = roleRepository.findByName("ROLE_PARENT");
+                    if (parentRole == null) {
+                        throw new RuntimeException("Parent role not found!");
+                    }
+                    parentUser.getRoles().add(parentRole);
+                    userRepository.save(parentUser);
+                }
+
+                // Fetch the parent entity or create it if it doesn't exist
                 parent = parentRepository.findByUserEntity(parentUser)
-                        .orElseThrow(() -> new RuntimeException("Parent entity not found for the given user."));
+                        .orElseGet(() -> {
+                            ParentEntity newParent = new ParentEntity();
+                            newParent.setUserEntity(parentUser);
+                            newParent.setStudents(new HashSet<>());
+                            return parentRepository.save(newParent);
+                        });
+
                 parent.getStudents().add(student);
+
             } else {
+                // Create new parent user and assign the parent role
                 UserEntity parentUser = userMapper.mapRegisterDTOToEntity(parentDTO);
                 parentUser.setPassword(passwordEncoder.encode(parentDTO.getPassword())); // Encode the password
                 RoleEntity parentRole = roleRepository.findByName("ROLE_PARENT");
@@ -207,6 +250,7 @@ public class StudentServiceImpl implements StudentService {
                 parentUser.getRoles().add(parentRole);
                 userRepository.save(parentUser);
 
+                // Create new parent entity
                 parent = new ParentEntity();
                 parent.setUserEntity(parentUser);
                 parent.setStudents(new HashSet<>());

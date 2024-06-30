@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { AuthContext } from '../Auth/AuthContext';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
 
 const AdminDashboard = () => {
     const [schools, setSchools] = useState([]);
@@ -29,10 +30,6 @@ const AdminDashboard = () => {
     useEffect(() => {
         fetchSchools();
     }, [fetchSchools, location.pathname]);
-
-    const handleSchoolClick = (schoolId) => {
-        navigate(`/admin/dashboard/school/${schoolId}/classes`);
-    };
 
     const handleEditSchool = (schoolId) => {
         navigate(`/admin/dashboard/school/${schoolId}/update`);
@@ -65,18 +62,22 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div>
-            <h2>Admin Dashboard</h2>
-            <button onClick={handleCreateSchool}>Create New School</button>
-            <p> Select a school: </p>
+        <div className="container mt-5">
+            <div className="text-center">
+                <h2>Admin Dashboard</h2>
+                <button className="btn btn-primary my-3" onClick={handleCreateSchool}>Create New School</button>
+            </div>
+            <h4>Select a school:</h4>
             {schools.length > 0 ? (
-                <div>
+                <div className="list-group">
                     {schools.map((school) => (
-                        <div key={school.id}>
-                            <span onClick={() => handleSchoolClick(school.id)}>{school.name}</span>
-                            <button onClick={() => handleEditSchool(school.id)}>Edit</button>
-                            <button onClick={() => handleDeleteSchool(school.id)}>Delete</button>
-                            <button onClick={() => handleSchoolDetails(school.id)}>Details</button>
+                        <div key={school.id} className="list-group-item d-flex justify-content-between align-items-center">
+                            <span className="font-weight-bold" onClick={() => handleSchoolDetails(school.id)}>{school.name}</span>
+                            <div>
+                                <button className="btn btn-info btn-sm mx-1" onClick={() => handleSchoolDetails(school.id)}>Details</button>
+                                <button className="btn btn-warning btn-sm mx-1" onClick={() => handleEditSchool(school.id)}>Edit</button>
+                                <button className="btn btn-danger btn-sm mx-1" onClick={() => handleDeleteSchool(school.id)}>Delete</button>
+                            </div>
                         </div>
                     ))}
                 </div>

@@ -11,7 +11,7 @@ const ClassDetails = () => {
     useEffect(() => {
         const fetchClassDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/class/${classId}`, {
+                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/${classId}`, {
                     headers: {
                         Authorization: `Bearer ${authData.accessToken}`,
                     },
@@ -30,14 +30,18 @@ const ClassDetails = () => {
         fetchClassDetails();
     }, [schoolId, classId, authData]);
 
+    const handleViewStudentsClick = () => {
+        navigate(`/admin/dashboard/school/${schoolId}/class/${classId}/students`);
+    };
+
     return (
-        <div>
+        <div className="container mt-4">
             <h2>Class Details for {classDetails.name}</h2>
-            <p>ID: {classDetails.id}</p>
-            <p>Name: {classDetails.name}</p>
-            <p>Level: {classDetails.level}</p>
-            {/* Add more details as needed */}
-            <button onClick={() => navigate(-1)}>Back to Classes</button>
+            <p><strong>Name:</strong> {classDetails.name}</p>
+            <p><strong>Level:</strong> {classDetails.level}</p>
+            <p><strong>School:</strong> {classDetails.schoolName}</p>
+            <button className="btn btn-primary me-2" onClick={handleViewStudentsClick}>View All Students</button>
+            <button className="btn btn-secondary" onClick={() => navigate(-1)}>Back to Classes</button>
         </div>
     );
 };

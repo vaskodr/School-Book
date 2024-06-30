@@ -21,6 +21,7 @@ import java.util.Optional;
 public class StudentController {
 
     private final StudentService studentService;
+    private final StudentRepository studentRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-student")
@@ -49,6 +50,15 @@ public class StudentController {
                                                            @PathVariable Long classId) {
         List<StudentDTO> studentDTOS = studentService.getAllStudents(schoolId, classId);
         return ResponseEntity.ok(studentDTOS);
+    }
+
+    @GetMapping("/{studentId}/details")
+    public ResponseEntity<StudentDetailsDTO> getStudentDetails(@PathVariable Long studentId) {
+        StudentEntity student = studentRepository.findById(studentId).orElseThrow(
+                () -> new RuntimeException("Student not found!")
+        );
+        StudentDetailsDTO studentDetailsDTO = studentService.getStudentDetails(student);
+        return ResponseEntity.ok(studentDetailsDTO);
     }
 
     @PutMapping("/{studentId}")

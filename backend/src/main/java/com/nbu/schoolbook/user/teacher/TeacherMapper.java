@@ -29,6 +29,11 @@ public class TeacherMapper {
         teacherDTO.setId(teacher.getId());
         teacherDTO.setFirstName(teacher.getUserEntity().getFirstName());
         teacherDTO.setLastName(teacher.getUserEntity().getLastName());
+        teacherDTO.setDateOfBirth(teacher.getUserEntity().getDateOfBirth());
+        teacherDTO.setGender(teacher.getUserEntity().getGender());
+        teacherDTO.setPhone(teacher.getUserEntity().getPhone());
+        teacherDTO.setEmail(teacher.getUserEntity().getEmail());
+        teacherDTO.setUsername(teacher.getUserEntity().getUsername());
 
         if (teacher.getSubjects() != null) {
             teacherDTO.setSubjectNames(teacher.getSubjects().stream()

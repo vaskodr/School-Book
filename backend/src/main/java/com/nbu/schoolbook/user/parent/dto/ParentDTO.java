@@ -23,5 +23,5 @@ public class ParentDTO {
     private String phone;
     private String email;
     private String username;
-    private List<StudentDTO> children;
+    private List<StudentDTO> students;
 }

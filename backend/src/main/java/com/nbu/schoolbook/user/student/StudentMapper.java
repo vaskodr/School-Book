@@ -4,19 +4,17 @@ import com.nbu.schoolbook.absence.AbsenceMapper;
 import com.nbu.schoolbook.class_entity.ClassEntity;
 import com.nbu.schoolbook.class_entity.ClassMapper;
 import com.nbu.schoolbook.class_entity.ClassRepository;
-import com.nbu.schoolbook.enums.Gender;
 import com.nbu.schoolbook.grade.GradeMapper;
 import com.nbu.schoolbook.user.UserEntity;
 import com.nbu.schoolbook.user.UserRepository;
-import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.parent.ParentMapper;
-import com.nbu.schoolbook.user.student.dto.CreateStudentDTO;
+import com.nbu.schoolbook.user.parent.dto.ParentDTO;
+import com.nbu.schoolbook.user.student.StudentEntity;
 import com.nbu.schoolbook.user.student.dto.StudentDTO;
 import com.nbu.schoolbook.user.student.dto.StudentDetailsDTO;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
 
 import java.util.stream.Collectors;
 
@@ -30,7 +28,6 @@ public class StudentMapper {
     private final GradeMapper gradeMapper;
     private final AbsenceMapper absenceMapper;
     private final ParentMapper parentMapper;
-
 
     public StudentDTO mapToDTO(StudentEntity student) {
         UserEntity user = userRepository.findById(student.getUserEntity().getId()).orElseThrow(
@@ -47,15 +44,17 @@ public class StudentMapper {
         return studentDTO;
     }
 
-    public StudentDetailsDTO mapToDetailsDTO(StudentEntity student){
+    public StudentDetailsDTO mapToDetailsDTO(StudentEntity student) {
+        UserEntity user = student.getUserEntity();
         StudentDetailsDTO studentDetailsDTO = new StudentDetailsDTO();
-        studentDetailsDTO.setFirstName(student.getUserEntity().getFirstName());
-        studentDetailsDTO.setLastName(student.getUserEntity().getLastName());
-        studentDetailsDTO.setDateOfBirth(student.getUserEntity().getDateOfBirth());
-        studentDetailsDTO.setGender(student.getUserEntity().getGender());
-        studentDetailsDTO.setPhone(student.getUserEntity().getPhone());
-        studentDetailsDTO.setEmail(student.getUserEntity().getEmail());
-        studentDetailsDTO.setUsername(student.getUserEntity().getUsername());
+        studentDetailsDTO.setFirstName(user.getFirstName());
+        studentDetailsDTO.setLastName(user.getLastName());
+        studentDetailsDTO.setDateOfBirth(user.getDateOfBirth());
+        studentDetailsDTO.setGender(user.getGender());
+        studentDetailsDTO.setPhone(user.getPhone());
+        studentDetailsDTO.setEmail(user.getEmail());
+        studentDetailsDTO.setUsername(user.getUsername());
+
         if (student.getGrades() != null) {
             studentDetailsDTO.setGrades(
                     student.getGrades().stream()
@@ -65,6 +64,7 @@ public class StudentMapper {
         } else {
             studentDetailsDTO.setGrades(null);
         }
+
         if (student.getAbsences() != null) {
             studentDetailsDTO.setAbsences(
                     student.getAbsences().stream()
@@ -74,16 +74,12 @@ public class StudentMapper {
         } else {
             studentDetailsDTO.setAbsences(null);
         }
-        studentDetailsDTO.setParents(
-                student.getParents().stream()
-                        .map(parentMapper::mapToDTO)
-                        .collect(Collectors.toList())
-        );
+
+        // StudentDetailsDTO no longer maps parents directly here
+
         studentDetailsDTO.setSchoolName(student.getStudentClass().getSchool().getName());
-        studentDetailsDTO.setClassDTO(
-                classMapper.mapToDTO(student.getStudentClass())
-        );
+        studentDetailsDTO.setClassDTO(classMapper.mapToDTO(student.getStudentClass()));
+
         return studentDetailsDTO;
     }
-
 }
