@@ -1,0 +1,14 @@
+.selected {
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+}
+
+.selected:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+}
+
+.card-title, .card-text {
+    font-weight: bold;
+}

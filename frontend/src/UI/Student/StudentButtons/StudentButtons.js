@@ -21,13 +21,13 @@ class StudentButtons extends Component {
 
   render() {
     const { content } = this.state;
-    const { schoolId, classId, studentId, authData } = this.props;
+    const { schoolId, studentId, authData } = this.props;
 
     return (
       <div>
         <StudentProgram
           schoolId={schoolId}
-          classId={classId}
+          studentId={studentId}
           authData={authData}
           clearContent={this.clearContent}
           setContent={this.setContent}

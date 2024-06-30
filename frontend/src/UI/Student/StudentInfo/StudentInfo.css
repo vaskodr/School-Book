@@ -1,0 +1,19 @@
+body {
+    background-color: #f0f2f5; /* Light grey background for the whole page */
+}
+
+.custom-card {
+    background-color: #ffffff; /* White background for the card */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow */
+}
+
+.custom-card-header {
+    background-color: #007bff; /* Blue background for the header */
+    color: white; /* White text color */
+    padding: 15px; /* Padding for better spacing */
+}
+
+.card-body {
+    padding: 20px; /* Padding inside the card body */
+}
