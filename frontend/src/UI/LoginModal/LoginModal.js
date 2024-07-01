@@ -55,10 +55,10 @@ const LoginModal = ({ onClose }) => {
       <div className="modal-overlay">
         <div className="modal-content">
           <span className="close-button" onClick={onClose}>×</span>
-          <h2>Вход</h2>
+          <h2>Login</h2>
           <form onSubmit={handleLogin}>
             <label>
-              Потребителско име:
+              Username:
               <input
                 type="text"
                 value={usernameOrEmail}
@@ -68,7 +68,7 @@ const LoginModal = ({ onClose }) => {
             />
             </label>
             <label>
-              Парола:
+              Password:
               <input
                 type="password"
                 value={password}
@@ -77,7 +77,7 @@ const LoginModal = ({ onClose }) => {
                 required
             />
             </label>
-            <button type="submit">Влез</button>
+            <button type="submit">Submit</button>
           </form>
         </div>
       </div>
