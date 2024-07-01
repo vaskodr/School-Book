@@ -6,10 +6,10 @@ function App() {
     return (
         <div>
             <div className="text-box left-box">
-                <h1>Електронен дневник</h1>
+                <h1>Online Schoolbook</h1>
 
-                <p>Добре дошли в онлайн платформата, създадена за удобство в следенето и управлението на учебния процес!</p>
-                <p>Натиснете "Вход", за да влезете в акаунта си, предоставен от училището.</p>
+                <p>Welcome to the online platform created for convenience in monitoring and managing the learning process!</p>
+                <p>Click "Login" to log in to your school-provided account.</p>
             </div>
         </div>
     );

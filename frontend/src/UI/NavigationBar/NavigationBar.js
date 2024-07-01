@@ -25,7 +25,7 @@ const NavigationBar = () => {
   return (
     <div className="navbar">
       {!authData ? (
-        <button className="navbar-button" onClick={handleLoginClick}>Вход</button>
+        <button className="navbar-button" onClick={handleLoginClick}>Login</button>
       ) : (
         <>
           {authData.roles.includes('ROLE_ADMIN') && (
