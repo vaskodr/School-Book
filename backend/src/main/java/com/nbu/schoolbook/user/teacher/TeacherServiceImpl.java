@@ -123,16 +123,39 @@ public class TeacherServiceImpl implements TeacherService {
         teacherRepository.save(teacher);
     }
 
+    @Transactional
     @Override
     public void deleteTeacher(Long schoolId, Long teacherId) {
         TeacherEntity teacherEntity = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
+        SchoolEntity schoolEntity = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
-        if (!teacherEntity.getSchool().getId().equals(schoolId)) {
-            throw new ResourceNotFoundException("Teacher not found in the specified school");
+        // Unassign teacher from school
+        schoolEntity.getTeachers().remove(teacherEntity);
+        schoolRepository.save(schoolEntity);
+
+        // Remove mentor class association if exists
+        if (teacherEntity.getMentoredClass() != null) {
+            teacherEntity.setMentoredClass(null);
         }
 
-        teacherRepository.deleteById(teacherId);
+        // Remove teacher role from user
+        UserEntity user = teacherEntity.getUserEntity();
+        RoleEntity teacherRole = roleRepository.findByName("ROLE_TEACHER");
+
+        // Remove the teacher role from the user's roles set
+        user.getRoles().remove(teacherRole);
+
+        // Delete the teacher entity
+        teacherRepository.delete(teacherEntity);
+
+        // Check if the user has any other roles
+        if (user.getRoles().isEmpty()) {
+            userRepository.delete(user);
+        } else {
+            userRepository.save(user);
+        }
     }
 
 

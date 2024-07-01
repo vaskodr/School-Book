@@ -15,7 +15,6 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     boolean existsByIdAndStudentClassSchoolIdAndStudentClassId(Long studentId, Long schoolId, Long classId);
     Optional<StudentEntity> findByUserEntityId(String userId);
     boolean existsByUserEntity(UserEntity userEntity);
-
     @Query("SELECT s FROM StudentEntity s WHERE s.id = :studentId AND s.studentClass.id = :classId AND s.studentClass.school.id = :schoolId")
     Optional<StudentEntity> findByStudentIdAndClassIdAndSchoolId(
             @Param("studentId") Long studentId,

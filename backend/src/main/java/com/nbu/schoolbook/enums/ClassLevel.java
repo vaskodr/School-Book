@@ -5,5 +5,14 @@ import lombok.Getter;
 public enum ClassLevel {
     FIRST,
     SECOND,
-    THIRD
+    THIRD,
+    FOURTH,
+    FIFTH,
+    SIXTH,
+    SEVENTH,
+    EIGHTH,
+    NINTH,
+    TENTH,
+    ELEVENTH,
+    TWELFTH
 }

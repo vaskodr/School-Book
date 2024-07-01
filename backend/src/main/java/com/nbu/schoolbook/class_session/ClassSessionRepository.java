@@ -11,7 +11,4 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 public interface ClassSessionRepository extends JpaRepository<ClassSessionEntity, Long> {
-    Optional<ClassSessionEntity> findByDayAndStartTimeAndEndTimeAndTeacherAndSubjectAndProgram(DayOfWeek day, String startTime, String endTime, TeacherEntity teacher, SubjectEntity subject, ProgramEntity program);
-
-    boolean existsByTeacherIdAndSubjectIdAndProgram_AssociatedClass_IdAndProgram_AssociatedClass_School_Id(Long teacherId, Long subjectId, Long classId, Long schoolId);
 }
