@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { AuthContext } from '../Auth/AuthContext';
-import TimeInput from "../Program/TimeInput";
 
 const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose }) => {
     const { authData } = useContext(AuthContext);
@@ -82,12 +81,15 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                     }),
                 });
 
-
                 if (response.ok) {
-                    const data = await response.json();
-                    onSave(data); // Callback to update parent state after saving
-                    fetchProgramData(); // Fetch updated program data
-                    handleClose();
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        await response.json();
+                    } else {
+                        await response.text(); // Handle non-JSON response
+                    }
+                    onSave(); // Callback to update parent state after saving
+                    handleClose(); // Close the overlay
                     setCurrentSession({
                         day: '',
                         startTime: '',
@@ -95,7 +97,6 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         teacherId: '',
                         subjectId: ''
                     });
-                     // Close the overlay
                 } else {
                     console.error('Failed to create session');
                 }
@@ -129,7 +130,7 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         <Form.Control
                             as="select"
                             value={currentSession.day}
-                            onChange={(e) => setCurrentSession({...currentSession, day: e.target.value})}
+                            onChange={(e) => setCurrentSession({ ...currentSession, day: e.target.value })}
                             isInvalid={!!errors.day}
                         >
                             <option value="">Select a day</option>
@@ -146,7 +147,7 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         <Form.Control
                             type="time"
                             value={currentSession.startTime}
-                            onChange={(e) => setCurrentSession({...currentSession, startTime: e.target.value})}
+                            onChange={(e) => setCurrentSession({ ...currentSession, startTime: e.target.value })}
                             isInvalid={!!errors.startTime}
                         />
                         <Form.Control.Feedback type="invalid">{errors.startTime}</Form.Control.Feedback>
@@ -156,7 +157,7 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         <Form.Control
                             type="time"
                             value={currentSession.endTime}
-                            onChange={(e) => setCurrentSession({...currentSession, endTime: e.target.value})}
+                            onChange={(e) => setCurrentSession({ ...currentSession, endTime: e.target.value })}
                             isInvalid={!!errors.endTime}
                         />
                         <Form.Control.Feedback type="invalid">{errors.endTime}</Form.Control.Feedback>
@@ -166,7 +167,7 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         <Form.Control
                             as="select"
                             value={currentSession.subjectId}
-                            onChange={(e) => setCurrentSession({...currentSession, subjectId: e.target.value})}
+                            onChange={(e) => setCurrentSession({ ...currentSession, subjectId: e.target.value })}
                             isInvalid={!!errors.subjectId}
                         >
                             <option value="">Select a subject</option>
@@ -181,7 +182,7 @@ const AddSessionOverlay = ({ onSave, programId, fetchProgramData, handleClose })
                         <Form.Control
                             as="select"
                             value={currentSession.teacherId}
-                            onChange={(e) => setCurrentSession({...currentSession, teacherId: e.target.value})}
+                            onChange={(e) => setCurrentSession({ ...currentSession, teacherId: e.target.value })}
                             isInvalid={!!errors.teacherId}
                         >
                             <option value="">Select a teacher</option>
