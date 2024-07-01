@@ -16,6 +16,8 @@ import java.util.List;
 public class UpdateStudentDTO {
     private String firstName;
     private String lastName;
+    private LocalDate dateOfBirth;
+    private Gender gender;
     private String phone;
     private String email;
     private String username;

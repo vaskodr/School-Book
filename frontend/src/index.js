@@ -27,6 +27,8 @@ import CreateClassProgram from "./Program/CreateClassProgram";
 import UpdateClassProgram from "./Program/UpdateClassProgram";
 import ClassProgram from "./Program/ClassProgram";
 import AddDirector from "./Director/AddDirector";
+import UpdateStudent from "./Student/UpdateStudent";
+import SubjectManagement from "./Subject/SubjectManagement";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -40,6 +42,14 @@ root.render(
                         element={
                             <PrivateRoute roles={['ROLE_STUDENT']}>
                                 <StudentDashboard/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/dashboard/subjects"
+                        element={
+                            <PrivateRoute roles={['ROLE_ADMIN']}>
+                                <SubjectManagement/>
                             </PrivateRoute>
                         }
                     />
@@ -99,7 +109,15 @@ root.render(
                             }
                         />
                         <Route
-                            path="/admin/dashboard/school/:schoolId/classes/:classId/update"
+                            path="/admin/dashboard/school/:schoolId/class/:classId/student/:studentId/update"
+                            element={
+                                <PrivateRoute roles={['ROLE_ADMIN']}>
+                                    <UpdateStudent/>
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin/dashboard/school/:schoolId/class/:classId/update"
                             element={
                                 <PrivateRoute roles={['ROLE_ADMIN']}>
                                     <UpdateClass/>

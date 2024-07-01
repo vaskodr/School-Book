@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
+import { Form, Button, Container } from 'react-bootstrap';
 
 const UpdateClass = () => {
     const { schoolId, classId } = useParams();
     const [name, setName] = useState('');
-    const [level, setLevel] = useState('');
+    const [level, setLevel] = useState('FIRST');
     const [mentorId, setMentorId] = useState('');
-    const [studentIds, setStudentIds] = useState([]);
+    const [mentors, setMentors] = useState([]);
     const { authData } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClassDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/class/${classId}`, {
+                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/${classId}`, {
                     headers: {
                         Authorization: `Bearer ${authData.accessToken}`,
                     },
@@ -24,7 +25,6 @@ const UpdateClass = () => {
                     setName(data.name);
                     setLevel(data.level);
                     setMentorId(data.mentorId);
-                    setStudentIds(data.studentIds);
                 } else {
                     console.error('Failed to fetch class details');
                 }
@@ -33,7 +33,26 @@ const UpdateClass = () => {
             }
         };
 
+        const fetchMentors = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/api/school/${schoolId}/teacher/available-mentors`, {
+                    headers: {
+                        Authorization: `Bearer ${authData.accessToken}`,
+                    },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setMentors(data);
+                } else {
+                    console.error('Failed to fetch mentors');
+                }
+            } catch (error) {
+                console.error('Error fetching mentors:', error);
+            }
+        };
+
         fetchClassDetails();
+        fetchMentors();
     }, [schoolId, classId, authData]);
 
     const handleSubmit = async (e) => {
@@ -42,13 +61,11 @@ const UpdateClass = () => {
         const updatedClass = {
             name,
             level,
-            mentorId,
-            studentIds,
-            schoolId
+            mentorId: mentorId || null, // If mentorId is empty, set it to null
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/class/${classId}`, {
+            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/${classId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,28 +85,59 @@ const UpdateClass = () => {
     };
 
     return (
-        <div>
+        <Container className="mt-4">
             <h2>Update Class</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Name</label>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Level</label>
-                    <input type="text" value={level} onChange={(e) => setLevel(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Mentor ID</label>
-                    <input type="text" value={mentorId} onChange={(e) => setMentorId(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Student IDs (comma separated)</label>
-                    <input type="text" value={studentIds} onChange={(e) => setStudentIds(e.target.value.split(','))} />
-                </div>
-                <button type="submit">Update Class</button>
-            </form>
-        </div>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="name" className="mb-3">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </Form.Group>
+                <Form.Group controlId="level" className="mb-3">
+                    <Form.Label>Level</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={level}
+                        onChange={(e) => setLevel(e.target.value)}
+                        required
+                    >
+                        <option value="FIRST">FIRST</option>
+                        <option value="SECOND">SECOND</option>
+                        <option value="THIRD">THIRD</option>
+                        <option value="FOURTH">FOURTH</option>
+                        <option value="FIFTH">FIFTH</option>
+                        <option value="SIXTH">SIXTH</option>
+                        <option value="SEVENTH">SEVENTH</option>
+                        <option value="EIGHTH">EIGHTH</option>
+                        <option value="NINTH">NINTH</option>
+                        <option value="TENTH">TENTH</option>
+                        <option value="ELEVENTH">ELEVENTH</option>
+                        <option value="TWELFTH">TWELFTH</option>
+                    </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="mentorId" className="mb-3">
+                    <Form.Label>Mentor</Form.Label>
+                    <Form.Control
+                        as="select"
+                        value={mentorId}
+                        onChange={(e) => setMentorId(e.target.value)}
+                    >
+                        <option value="">Select a mentor</option>
+                        {mentors.map(mentor => (
+                            <option key={mentor.id} value={mentor.id}>
+                                {mentor.firstName} {mentor.lastName} - {mentor.subjectNames.join(', ')}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
+                <Button variant="primary" type="submit">Update Class</Button>
+                <Button variant="secondary" className="ms-2" onClick={() => navigate(-1)}>Back</Button>
+            </Form>
+        </Container>
     );
 };
 

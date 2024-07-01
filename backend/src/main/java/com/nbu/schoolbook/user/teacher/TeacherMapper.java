@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.Mapping;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -56,6 +57,10 @@ public class TeacherMapper {
 
 
         return teacherDTO;
+    }
+
+    public List<TeacherDTO> toDTOs(List<TeacherEntity> teachers) {
+        return teachers.stream().map(this::mapEntityToDTO).collect(Collectors.toList());
     }
 
     public TeacherEntity mapDTOToEntity(TeacherDTO teacherDTO) {

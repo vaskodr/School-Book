@@ -1,8 +1,7 @@
-// src/School/SchoolClasses.js
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
-import { Button } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SchoolClasses = () => {
@@ -40,7 +39,6 @@ const SchoolClasses = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log('Fetched school details:', data); // Debug log
                 setSchoolDetails(data);
                 if (data.directorId) {
                     fetchDirectorDetails(data.directorId);
@@ -62,7 +60,6 @@ const SchoolClasses = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log('Fetched director details:', data); // Debug log
                 setDirectorDetails(data);
             } else {
                 console.error('Failed to fetch director details');
@@ -99,7 +96,7 @@ const SchoolClasses = () => {
 
     const handleDeleteClass = async (classId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/class/${classId}`, {
+            const response = await fetch(`http://localhost:8080/api/school/${schoolId}/classes/${classId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${authData.accessToken}`,
@@ -165,51 +162,81 @@ const SchoolClasses = () => {
         navigate(`/admin/dashboard/school/${schoolId}/director/${directorId}`);
     };
 
+    // Group classes by level
+    const groupedClasses = classes.reduce((acc, classItem) => {
+        const level = classItem.level;
+        if (!acc[level]) {
+            acc[level] = [];
+        }
+        acc[level].push(classItem);
+        return acc;
+    }, {});
+
+    // Levels in order
+    const levels = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'FIFTH', 'SIXTH', 'SEVENTH', 'EIGHTH', 'NINTH', 'TENTH', 'ELEVENTH', 'TWELFTH'];
+
     return (
-        <div className="container mt-5">
-            <h2 className="text-center">Classes for School {schoolId}</h2>
+        <Container className="mt-5">
+            <h2 className="text-center mb-4">Classes for School {schoolId}</h2>
             {schoolDetails.directorId && directorDetails ? (
-                <div className="mb-3">
-                    <h5>Director: {directorDetails.firstName} {directorDetails.lastName}</h5>
-                    <div className="d-flex">
-                        <Button variant="secondary" size="sm" onClick={() => handleDirectorDetailsClick(schoolDetails.directorId)} className="mx-1">Details</Button>
-                        <Button variant="warning" size="sm" onClick={() => handleEditDirectorClick(schoolDetails.directorId)} className="mx-1">Edit</Button>
-                        <Button variant="danger" size="sm" onClick={() => handleDeleteDirectorClick(schoolDetails.directorId)} className="mx-1">Delete</Button>
-                        <Button variant="danger" size="sm" onClick={() => handleUnassignDirector(schoolDetails.directorId)} className="mx-1">Unassign Director</Button>
-                    </div>
-                </div>
+                <Card className="mb-4">
+                    <Card.Body>
+                        <Card.Title>Director: {directorDetails.firstName} {directorDetails.lastName}</Card.Title>
+                        <div className="d-flex justify-content-end">
+                            <Button variant="secondary" size="sm" onClick={() => handleDirectorDetailsClick(schoolDetails.directorId)} className="mx-1">Details</Button>
+                            <Button variant="warning" size="sm" onClick={() => handleEditDirectorClick(schoolDetails.directorId)} className="mx-1">Edit</Button>
+                            <Button variant="danger" size="sm" onClick={() => handleDeleteDirectorClick(schoolDetails.directorId)} className="mx-1">Delete</Button>
+                            <Button variant="danger" size="sm" onClick={() => handleUnassignDirector(schoolDetails.directorId)} className="mx-1">Unassign Director</Button>
+                        </div>
+                    </Card.Body>
+                </Card>
             ) : (
-                <Button variant="info" onClick={handleAddDirectorClick}>
+                <Button variant="info" className="mb-4" onClick={handleAddDirectorClick}>
                     Add Director
                 </Button>
             )}
-            <div className="d-flex justify-content-between mb-3">
-                <Button variant="primary" onClick={handleAddClassClick}>
-                    Add Class
-                </Button>
-                <Button variant="secondary" onClick={handleViewTeachersClick}>
-                    View All Teachers
-                </Button>
-            </div>
+            <Row className="mb-4">
+                <Col>
+                    <Button variant="primary" className="w-100" onClick={handleAddClassClick}>
+                        Add Class
+                    </Button>
+                </Col>
+                <Col>
+                    <Button variant="secondary" className="w-100" onClick={handleViewTeachersClick}>
+                        View All Teachers
+                    </Button>
+                </Col>
+            </Row>
             <Outlet />
             {classes.length > 0 ? (
-                <div className="list-group">
-                    {classes.map((classItem) => (
-                        <div key={classItem.id} className="list-group-item d-flex justify-content-between align-items-center">
-                            <span className="font-weight-bold">{classItem.name} - {classItem.level}</span>
-                            <div>
-                                <Button variant="info" size="sm" onClick={() => handleClassClick(classItem.id)}>Details</Button>
-                                <Button variant="info" size="sm" onClick={() => handleViewProgramsClick(classItem.id)} className="mx-1">Programs</Button>
-                                <Button variant="warning" size="sm" onClick={() => handleEditClass(classItem.id)} className="mx-1">Edit</Button>
-                                <Button variant="danger" size="sm" onClick={() => handleDeleteClass(classItem.id)}>Delete</Button>
-                            </div>
+                levels.map(level => (
+                    groupedClasses[level] && (
+                        <div key={level} className="mb-4">
+                            <h4>{level}</h4>
+                            <Row>
+                                {groupedClasses[level].map(classItem => (
+                                    <Col md={6} key={classItem.id} className="mb-3">
+                                        <Card>
+                                            <Card.Body>
+                                                <Card.Title>{classItem.name}</Card.Title>
+                                                <div className="d-flex justify-content-end">
+                                                    <Button variant="info" size="sm" onClick={() => handleClassClick(classItem.id)}>Details</Button>
+                                                    <Button variant="info" size="sm" onClick={() => handleViewProgramsClick(classItem.id)} className="mx-1">Programs</Button>
+                                                    <Button variant="warning" size="sm" onClick={() => handleEditClass(classItem.id)} className="mx-1">Edit</Button>
+                                                    <Button variant="danger" size="sm" onClick={() => handleDeleteClass(classItem.id)}>Delete</Button>
+                                                </div>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
                         </div>
-                    ))}
-                </div>
+                    )
+                ))
             ) : (
                 <p className="text-center">Loading classes...</p>
             )}
-        </div>
+        </Container>
     );
 };
 

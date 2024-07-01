@@ -43,24 +43,14 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     @Transactional
-    public void createProgram(Long schoolId, Long classId, CreateProgramDTO createProgramDTO) {
-        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
-                .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
-
+    public void createProgram(Long schoolId, Long classId) {
         ProgramEntity programEntity = new ProgramEntity();
+        ClassEntity classEntity = classRepository.findById(classId)
+                .orElseThrow(
+                        () -> new RuntimeException("Class not found!")
+                );
         programEntity.setAssociatedClass(classEntity);
-        programEntity.setClassSessions(new HashSet<>());
-        programEntity = programRepository.save(programEntity);
-
-        for (CreateClassSessionDTO sessionDTO : createProgramDTO.getClassSessions()) {
-            ClassSessionDTO classSessionDTO = classSessionService.createClassSession(sessionDTO, programEntity.getId());
-            ClassSessionEntity classSessionEntity = classSessionMapper.mapToEntity(classSessionDTO);
-            // Ensure the entity is managed
-            classSessionEntity = classSessionRepository.save(classSessionEntity);
-            programEntity.getClassSessions().add(classSessionEntity);
-        }
-
-        programEntity = programRepository.save(programEntity);
+        programRepository.save(programEntity);
     }
 
     @Override
@@ -107,26 +97,26 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     @Transactional
     public void updateProgram(Long schoolId, Long classId, Long programId, UpdateProgramDTO updateProgramDTO) {
-        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
-                .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
-
-        ProgramEntity programEntity = programRepository.findById(programId)
-                .orElseThrow(() -> new RuntimeException("Program not found!"));
-
-        programEntity.setAssociatedClass(classEntity);
-
-        programEntity.getClassSessions().clear();
-        programEntity = programRepository.save(programEntity);
-
-        for (CreateClassSessionDTO sessionDTO : updateProgramDTO.getClassSessions()) {
-            ClassSessionDTO classSessionDTO = classSessionService.createClassSession(sessionDTO, programEntity.getId());
-            ClassSessionEntity classSessionEntity = classSessionMapper.mapToEntity(classSessionDTO);
-            // Ensure the entity is managed
-            classSessionEntity = classSessionRepository.save(classSessionEntity);
-            programEntity.getClassSessions().add(classSessionEntity);
-        }
-
-        programRepository.save(programEntity);
+//        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
+//                .orElseThrow(() -> new RuntimeException("Class not found for the given school"));
+//
+//        ProgramEntity programEntity = programRepository.findById(programId)
+//                .orElseThrow(() -> new RuntimeException("Program not found!"));
+//
+//        programEntity.setAssociatedClass(classEntity);
+//
+//        programEntity.getClassSessions().clear();
+//        programEntity = programRepository.save(programEntity);
+//
+//        for (CreateClassSessionDTO sessionDTO : updateProgramDTO.getClassSessions()) {
+//            ClassSessionDTO classSessionDTO = classSessionService.createClassSession(sessionDTO, programEntity.getId());
+//            ClassSessionEntity classSessionEntity = classSessionMapper.mapToEntity(classSessionDTO);
+//            // Ensure the entity is managed
+//            classSessionEntity = classSessionRepository.save(classSessionEntity);
+//            programEntity.getClassSessions().add(classSessionEntity);
+//        }
+//
+//        programRepository.save(programEntity);
     }
 
     @Override
@@ -135,6 +125,32 @@ public class ProgramServiceImpl implements ProgramService {
         ProgramEntity programEntity = programRepository.findByIdAndAssociatedClassSchoolIdAndAssociatedClassId(programId, schoolId, classId)
                 .orElseThrow(() -> new RuntimeException("Program not found for the given school and class"));
         programRepository.delete(programEntity);
+    }
+
+
+    @Override
+    @Transactional
+    public WeeklyProgramDTO getWeeklyProgramForClass(Long schoolId, Long classId) {
+        ProgramEntity programEntity = programRepository.findByAssociatedClassSchoolIdAndAssociatedClassId(schoolId, classId)
+                .orElseThrow(() -> new ResourceNotFoundException("Program not found"));
+
+        Map<DayOfWeek, List<ClassSessionEntity>> sessionsByDay = programEntity.getClassSessions().stream()
+                .collect(Collectors.groupingBy(ClassSessionEntity::getDay));
+
+        Map<DayOfWeek, List<SessionDTO>> sessionsByDayDTO = sessionsByDay.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .map(session -> new SessionDTO(
+                                        session.getStartTime().toString(),
+                                        session.getEndTime().toString(),
+                                        userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getFirstName() + " " + userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getLastName(),
+                                        session.getSubject().getName()
+                                ))
+                                .collect(Collectors.toList())
+                ));
+
+        return new WeeklyProgramDTO(programEntity.getId(), sessionsByDayDTO);
     }
 
     @Override
@@ -151,15 +167,15 @@ public class ProgramServiceImpl implements ProgramService {
                         Map.Entry::getKey,
                         entry -> entry.getValue().stream()
                                 .map(session -> new SessionDTO(
-                                        session.getStartTime(),
-                                        session.getEndTime(),
+                                        session.getStartTime().toString(),
+                                        session.getEndTime().toString(),
                                         new String(userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getFirstName() + " " + userRepository.getReferenceById(teacherRepository.getReferenceById(session.getTeacher().getId()).getUserEntity().getId()).getLastName()),
                                         session.getSubject().getName()
                                 ))
                                 .collect(Collectors.toList())
                 ));
 
-        return new WeeklyProgramDTO(sessionsByDayDTO);
+        return new WeeklyProgramDTO(programEntity.getId(), sessionsByDayDTO);
     }
 
     @Override
@@ -175,8 +191,8 @@ public class ProgramServiceImpl implements ProgramService {
                         Map.Entry::getKey,
                         entry -> entry.getValue().stream()
                                 .map(session -> new TeacherSessionDTO(
-                                        session.getStartTime(),
-                                        session.getEndTime(),
+                                        session.getStartTime().toString(),
+                                        session.getEndTime().toString(),
                                         session.getSubject().getName(),
                                         session.getProgram().getAssociatedClass().getName(),
                                         session.getProgram().getAssociatedClass().getLevel()

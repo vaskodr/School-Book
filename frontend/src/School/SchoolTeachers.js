@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
+import { Button, Container, ListGroup, Card, Row, Col } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SchoolTeachers = () => {
     const { schoolId } = useParams();
@@ -61,27 +63,45 @@ const SchoolTeachers = () => {
     };
 
     return (
-        <div className="container mt-4">
+        <Container className="mt-4">
             <h2>Teachers in School</h2>
-            <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>Back to School Details</button>
-            <button className="btn btn-primary mb-3" onClick={handleAddTeacherClick}>Add Teacher</button>
+            <Button variant="secondary" className="mb-3" onClick={() => navigate(-1)}>Back to School Details</Button>
+            <Button variant="primary" className="mb-3" onClick={handleAddTeacherClick}>Add Teacher</Button>
             {teachers.length > 0 ? (
-                <ul className="list-group">
+                <ListGroup>
                     {teachers.map((teacher) => (
-                        <li key={teacher.id} className="list-group-item d-flex justify-content-between align-items-center">
-                            {teacher.firstName} {teacher.lastName}
-                            <div>
-                                <button className="btn btn-secondary btn-sm me-2" onClick={() => handleEditTeacher(teacher.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm me-2" onClick={() => handleDeleteTeacher(teacher.id)}>Delete</button>
-                                <button className="btn btn-info btn-sm" onClick={() => handleViewTeacherDetails(teacher.id)}>Details</button>
-                            </div>
-                        </li>
+                        <ListGroup.Item key={teacher.id} className="mb-3">
+                            <Row>
+                                <Col md={8}>
+                                    <Card>
+                                        <Card.Body>
+                                            <Card.Title>{teacher.firstName} {teacher.lastName}</Card.Title>
+                                            <Card.Text>
+                                                <strong>Subjects:</strong> {teacher.subjectNames.join(', ')}<br />
+                                                {teacher.classDTO ? (
+                                                    <>
+                                                        <strong>Mentored Class:</strong> {teacher.classDTO.name} - Level: {teacher.classDTO.level}
+                                                    </>
+                                                ) : (
+                                                    <strong>No mentored class</strong>
+                                                )}
+                                            </Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col md={4} className="d-flex align-items-center justify-content-end">
+                                    <Button variant="secondary" className="me-2" onClick={() => handleEditTeacher(teacher.id)}>Edit</Button>
+                                    <Button variant="danger" className="me-2" onClick={() => handleDeleteTeacher(teacher.id)}>Delete</Button>
+                                    <Button variant="info" onClick={() => handleViewTeacherDetails(teacher.id)}>Details</Button>
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
                     ))}
-                </ul>
+                </ListGroup>
             ) : (
                 <p>Loading teachers...</p>
             )}
-        </div>
+        </Container>
     );
 };
 

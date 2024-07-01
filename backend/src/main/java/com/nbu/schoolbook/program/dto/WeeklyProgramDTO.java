@@ -10,5 +10,6 @@ import java.util.*;
 @Setter
 @AllArgsConstructor
 public class WeeklyProgramDTO {
+    private Long programId;
     private Map<DayOfWeek, List<SessionDTO>> weeklyProgram;
 }

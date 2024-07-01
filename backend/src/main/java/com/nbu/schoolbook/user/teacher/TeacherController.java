@@ -58,5 +58,11 @@ public class TeacherController {
         return ResponseEntity.ok("Teacher has been deleted successfully!");
     }
 
+    @GetMapping("/available-mentors")
+    public ResponseEntity<List<TeacherDTO>> getAvailableMentors(@PathVariable Long schoolId) {
+        List<TeacherDTO> availableMentors = teacherService.getAvailableMentors(schoolId);
+        return ResponseEntity.ok(availableMentors);
+    }
+
 
 }

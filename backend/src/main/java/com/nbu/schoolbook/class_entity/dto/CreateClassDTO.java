@@ -11,4 +11,5 @@ import java.util.Set;
 public class CreateClassDTO {
     private String name;
     private ClassLevel level;
+    private Long mentorId;
 }

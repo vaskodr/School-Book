@@ -10,8 +10,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeacherSessionDTO {
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String startTime;
+    private String endTime;
     private String subject;
     private String className;
     private ClassLevel classLevel;

@@ -11,10 +11,7 @@ public class ClassDTO {
     private Long id;
     private String name;
     private ClassLevel level;
+    private Long mentorId;
     private Long schoolId;
     private String schoolName;
-//    @Nullable
-//    private Long directorId;
-//    @Nullable
-//    private String directorName;
 }

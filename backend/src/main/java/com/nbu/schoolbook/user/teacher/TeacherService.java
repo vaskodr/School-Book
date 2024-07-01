@@ -18,6 +18,8 @@ public interface TeacherService {
     void assignClassMentor(TeacherEntity teacher, ClassEntity mentorClass);
     void handleSubjectAssociation(RegisterDTO registerDTO, TeacherEntity teacher);
 
+    List<TeacherDTO> getAvailableMentors(Long schoolId);
+
 //    List<ListTeacherDTO> getAllTeachersBySchoolId();
 
 }

@@ -9,8 +9,8 @@ import java.time.LocalTime;
 public class UpdateClassSessionDTO {
     private Long id;
     private DayOfWeek day;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String startTime;
+    private String endTime;
     private Long teacherId;
     private Long subjectId;
 }

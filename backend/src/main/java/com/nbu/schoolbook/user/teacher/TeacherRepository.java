@@ -18,4 +18,9 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Long> {
     List<TeacherEntity> findBySchoolId(Long schoolId);
 
     Optional<TeacherEntity> findByIdAndSchoolId(Long teacherId, Long schoolId);
+
+    @Query("SELECT t FROM TeacherEntity t WHERE t.school.id = :schoolId AND t NOT IN (SELECT c.mentor FROM ClassEntity c WHERE c.mentor IS NOT NULL)")
+    List<TeacherEntity> findAvailableMentors(Long schoolId);
+
+    List<TeacherEntity> findBySubjectsId(Long subjectId);
 }

@@ -22,9 +22,8 @@ public class ProgramController {
     @PostMapping("/classes/{classId}/create")
     public ResponseEntity<String> createProgram(
             @PathVariable Long schoolId,
-            @PathVariable Long classId,
-            @RequestBody CreateProgramDTO createProgramDTO) {
-        programService.createProgram(schoolId, classId, createProgramDTO);
+            @PathVariable Long classId) {
+        programService.createProgram(schoolId, classId);
         return ResponseEntity.ok(
                 "Program for class id: "
                 + classId
@@ -35,9 +34,9 @@ public class ProgramController {
     }
 
     @GetMapping("/classes/{classId}")
-    public ResponseEntity<ProgramDTO> getClassProgram(@PathVariable Long schoolId, @PathVariable Long classId) {
-        ProgramDTO programDTO = programService.getClassProgram(schoolId, classId);
-        return ResponseEntity.ok(programDTO);
+    public ResponseEntity<WeeklyProgramDTO> getClassProgram(@PathVariable Long schoolId, @PathVariable Long classId) {
+        WeeklyProgramDTO weeklyProgram = programService.getWeeklyProgramForClass(schoolId, classId);
+        return ResponseEntity.ok(weeklyProgram);
     }
 
 

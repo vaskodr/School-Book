@@ -16,7 +16,7 @@ public interface ProgramRepository extends JpaRepository<ProgramEntity, Long> {
     List<ProgramEntity> findAllByAssociatedClass(ClassEntity classEntity);
     Optional<ProgramEntity> findByAssociatedClassSchoolIdAndAssociatedClassStudentsId(Long schoolId, Long studentId);
     Optional<ProgramEntity> findByIdAndAssociatedClassSchoolIdAndAssociatedClassId(Long programId, Long schoolId, Long classId);
-
+    //Optional<ProgramEntity> findByAssociatedClassSchoolIdAndAssociatedClassId(Long schoolId, Long classId);
     Optional<ProgramEntity> getProgramEntityById(Long programId);
 
 

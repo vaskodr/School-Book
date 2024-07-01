@@ -30,11 +30,11 @@ public class ClassSessionController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/program/{programId}/create")
-    public ResponseEntity<ClassSessionDTO> createClassSession(
+    public ResponseEntity<String> createClassSession(
             @PathVariable Long programId,
             @RequestBody CreateClassSessionDTO createClassSessionDTO) {
-        ClassSessionDTO classSessionDTO = classSessionService.createClassSession(createClassSessionDTO, programId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(classSessionDTO);
+        classSessionService.createClassSession(createClassSessionDTO, programId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully!");
     }
 
     @GetMapping("/{id}")
@@ -50,9 +50,9 @@ public class ClassSessionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClassSessionDTO> updateClassSession(@PathVariable Long id, @RequestBody UpdateClassSessionDTO updateClassSessionDTO) {
-        ClassSessionDTO classSessionDTO = classSessionService.updateClassSession(id, updateClassSessionDTO);
-        return new ResponseEntity<>(classSessionDTO, HttpStatus.OK);
+    public ResponseEntity<String> updateClassSession(@PathVariable Long id, @RequestBody UpdateClassSessionDTO updateClassSessionDTO) {
+        classSessionService.updateClassSession(id, updateClassSessionDTO);
+        return new ResponseEntity<>("Ok", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

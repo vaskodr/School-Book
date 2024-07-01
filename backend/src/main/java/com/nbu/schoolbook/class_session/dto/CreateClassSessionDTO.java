@@ -8,8 +8,8 @@ import java.time.LocalTime;
 @Data
 public class CreateClassSessionDTO {
     private DayOfWeek day;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String startTime;
+    private String endTime;
     private Long teacherId;
     private Long subjectId;
 }

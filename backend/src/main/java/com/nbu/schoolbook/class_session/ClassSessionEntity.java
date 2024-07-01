@@ -7,6 +7,7 @@ import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalTime;
 
 @Entity
@@ -26,10 +27,10 @@ public class ClassSessionEntity {
     private DayOfWeek day;
 
     @Column(nullable = false)
-    private LocalTime startTime;
+    private String startTime;
 
     @Column(nullable = false)
-    private LocalTime endTime;
+    private String endTime;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)

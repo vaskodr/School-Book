@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Auth/AuthContext';
+import { Button, Container, Row, Col, ListGroup, Card } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const StudentsList = () => {
     const { schoolId, classId } = useParams();
@@ -61,27 +63,37 @@ const StudentsList = () => {
     };
 
     return (
-        <div className="container mt-4">
-            <h2>Students in Class</h2>
-            <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>Back to Class Details</button>
-            <button className="btn btn-primary mb-3" onClick={handleAddStudentClick}>Add Student</button>
-            {students.length > 0 ? (
-                <ul className="list-group">
-                    {students.map((student) => (
-                        <li key={student.id} className="list-group-item d-flex justify-content-between align-items-center">
-                            {student.firstName} {student.lastName}
-                            <div>
-                                <button className="btn btn-secondary btn-sm me-2" onClick={() => handleEditStudent(student.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm me-2" onClick={() => handleDeleteStudent(student.id)}>Delete</button>
-                                <button className="btn btn-info btn-sm" onClick={() => handleStudentDetails(student.id)}>Details</button>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Loading students...</p>
-            )}
-        </div>
+        <Container className="mt-4">
+            <Card className="mb-4">
+                <Card.Body>
+                    <Card.Title className="text-center">Students in Class</Card.Title>
+                    <Row className="mb-3">
+                        <Col>
+                            <Button variant="secondary" onClick={() => navigate(-1)} className="w-100">Back to Class Details</Button>
+                        </Col>
+                        <Col>
+                            <Button variant="primary" onClick={handleAddStudentClick} className="w-100">Add Student</Button>
+                        </Col>
+                    </Row>
+                    {students.length > 0 ? (
+                        <ListGroup>
+                            {students.map((student) => (
+                                <ListGroup.Item key={student.id} className="d-flex justify-content-between align-items-center">
+                                    <span>{student.firstName} {student.lastName}</span>
+                                    <div>
+                                        <Button variant="info" size="sm" onClick={() => handleStudentDetails(student.id)} className="me-2">Details</Button>
+                                        <Button variant="warning" size="sm" onClick={() => handleEditStudent(student.id)} className="me-2">Edit</Button>
+                                        <Button variant="danger" size="sm" onClick={() => handleDeleteStudent(student.id)}>Delete</Button>
+                                    </div>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    ) : (
+                        <p className="text-center">Loading students...</p>
+                    )}
+                </Card.Body>
+            </Card>
+        </Container>
     );
 };
 

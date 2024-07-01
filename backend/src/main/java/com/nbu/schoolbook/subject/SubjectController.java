@@ -3,6 +3,7 @@ package com.nbu.schoolbook.subject;
 import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
 import com.nbu.schoolbook.subject.dto.SubjectDTO;
 import com.nbu.schoolbook.subject.dto.UpdateSubjectDTO;
+import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,12 @@ public class SubjectController {
     public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
         List<SubjectDTO> subjects = subjectService.getAllSubjects();
         return ResponseEntity.ok(subjects);
+    }
+
+    @GetMapping("/{subjectId}/teachers")
+    public ResponseEntity<List<TeacherDTO>> getTeachersBySubjectId(@PathVariable Long subjectId) {
+        List<TeacherDTO> teachers = subjectService.getTeachersBySubjectId(subjectId);
+        return ResponseEntity.ok(teachers);
     }
 
     @PutMapping("/{subjectId}")

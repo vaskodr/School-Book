@@ -16,6 +16,7 @@ import com.nbu.schoolbook.user.teacher.TeacherEntity;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -39,15 +40,28 @@ public class ClassServiceImpl implements ClassService{
         ClassEntity newClass = new ClassEntity();
         newClass.setName(createClassDTO.getName());
         newClass.setLevel(createClassDTO.getLevel());
+        TeacherEntity mentor = teacherRepository.findById(createClassDTO.getMentorId())
+                        .orElseThrow(
+                                () -> new RuntimeException("Teacher not found!")
+                        );
+        newClass.setMentor(mentor);
         newClass.setSchool(school);
-
         classRepository.save(newClass);
+
+        mentor.setMentoredClass(newClass);
+        teacherRepository.save(mentor);
+        school.getClasses().add(newClass);
+        schoolRepository.save(school);
+
+
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ClassDTO getClassById(Long schoolId, Long classId) {
-        ClassEntity classEntity = classRepository.findByIdAndSchoolId(schoolId, classId)
+        ClassEntity classEntity = classRepository.findByIdAndSchoolId(classId, schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("Class not found for the specified school"));
+
         return classMapper.mapToDTO(classEntity);
     }
 
@@ -74,12 +88,6 @@ public class ClassServiceImpl implements ClassService{
         TeacherEntity mentor = teacherRepository.findById(updateClassDTO.getMentorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Mentor not found"));
         classEntity.setMentor(mentor);
-
-        Set<StudentEntity> students = updateClassDTO.getStudentIds().stream()
-                .map(studentId -> studentRepository.findById(studentId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Student not found")))
-                .collect(Collectors.toSet());
-        classEntity.setStudents(students);
 
         classRepository.save(classEntity);
     }

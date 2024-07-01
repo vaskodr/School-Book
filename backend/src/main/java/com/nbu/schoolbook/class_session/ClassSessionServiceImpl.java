@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +33,7 @@ public class ClassSessionServiceImpl implements ClassSessionService{
 
     @Override
     @Transactional
-    public ClassSessionDTO createClassSession(CreateClassSessionDTO createClassSessionDTO, Long programId) {
+    public void createClassSession(CreateClassSessionDTO createClassSessionDTO, Long programId) {
         TeacherEntity teacher = teacherRepository.findById(createClassSessionDTO.getTeacherId())
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
         SubjectEntity subject = subjectRepository.findById(createClassSessionDTO.getSubjectId())
@@ -39,27 +41,15 @@ public class ClassSessionServiceImpl implements ClassSessionService{
         ProgramEntity program = programRepository.findById(programId)
                 .orElseThrow(() -> new RuntimeException("Program not found"));
 
-        if (teacher.getSubjects().contains(subject)) {
-            ClassSessionEntity classSessionEntity = new ClassSessionEntity();
-            classSessionEntity.setDay(createClassSessionDTO.getDay());
-            classSessionEntity.setStartTime(createClassSessionDTO.getStartTime());
-            classSessionEntity.setEndTime(createClassSessionDTO.getEndTime());
-            classSessionEntity.setTeacher(teacher);
-            classSessionEntity.setSubject(subject);
-            classSessionEntity.setProgram(program);
+        ClassSessionEntity classSessionEntity = new ClassSessionEntity();
+        classSessionEntity.setDay(createClassSessionDTO.getDay());
+        classSessionEntity.setStartTime(createClassSessionDTO.getStartTime());
+        classSessionEntity.setEndTime(createClassSessionDTO.getEndTime());
+        classSessionEntity.setSubject(subject);
+        classSessionEntity.setTeacher(teacher);
+        classSessionEntity.setProgram(program);
 
-            teacher.getClassSessions().add(classSessionEntity);
-            subject.getClassSessions().add(classSessionEntity);
-
-            teacherRepository.save(teacher);
-            subjectRepository.save(subject);
-            // Save the class session entity
-            classSessionEntity = classSessionRepository.save(classSessionEntity);
-            return classSessionMapper.mapToDTO(classSessionEntity);
-        } else {
-            throw new RuntimeException("That teacher does not have qualification for that subject!");
-        }
-
+        classSessionRepository.save(classSessionEntity);
     }
 
     @Override
@@ -77,7 +67,7 @@ public class ClassSessionServiceImpl implements ClassSessionService{
     }
 
     @Override
-    public ClassSessionDTO updateClassSession(Long id, UpdateClassSessionDTO updateClassSessionDTO) {
+    public void updateClassSession(Long id, UpdateClassSessionDTO updateClassSessionDTO) {
         ClassSessionEntity classSession = classSessionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ClassSession not found!"));
 
@@ -90,7 +80,6 @@ public class ClassSessionServiceImpl implements ClassSessionService{
                 .orElseThrow(() -> new RuntimeException("Subject not found!")));
 
         classSession = classSessionRepository.save(classSession);
-        return classSessionMapper.mapToDTO(classSession);
     }
 
     @Override

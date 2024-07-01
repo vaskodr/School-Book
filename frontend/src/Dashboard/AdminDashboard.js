@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { AuthContext } from '../Auth/AuthContext';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminDashboard = () => {
     const [schools, setSchools] = useState([]);
@@ -61,31 +62,46 @@ const AdminDashboard = () => {
         navigate(`/admin/dashboard/school/${schoolId}/classes`);
     };
 
+    const handleManageSubjects = () => {
+        navigate('/admin/dashboard/subjects');
+    };
+
     return (
-        <div className="container mt-5">
-            <div className="text-center">
+        <Container className="mt-5">
+            <div className="text-center mb-4">
                 <h2>Admin Dashboard</h2>
-                <button className="btn btn-primary my-3" onClick={handleCreateSchool}>Create New School</button>
             </div>
-            <h4>Select a school:</h4>
+            <Row className="justify-content-center mb-4">
+                <Col md={4}>
+                    <Button variant="primary" className="w-100 mb-3" onClick={handleCreateSchool}>Create New School</Button>
+                </Col>
+                <Col md={4}>
+                    <Button variant="secondary" className="w-100 mb-3" onClick={handleManageSubjects}>Manage Subjects</Button>
+                </Col>
+            </Row>
+            <h4 className="mb-4">Select a school:</h4>
             {schools.length > 0 ? (
-                <div className="list-group">
+                <Row>
                     {schools.map((school) => (
-                        <div key={school.id} className="list-group-item d-flex justify-content-between align-items-center">
-                            <span className="font-weight-bold" onClick={() => handleSchoolDetails(school.id)}>{school.name}</span>
-                            <div>
-                                <button className="btn btn-info btn-sm mx-1" onClick={() => handleSchoolDetails(school.id)}>Details</button>
-                                <button className="btn btn-warning btn-sm mx-1" onClick={() => handleEditSchool(school.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm mx-1" onClick={() => handleDeleteSchool(school.id)}>Delete</button>
-                            </div>
-                        </div>
+                        <Col md={6} key={school.id} className="mb-3">
+                            <Card>
+                                <Card.Body>
+                                    <Card.Title>{school.name}</Card.Title>
+                                    <Card.Text>
+                                        <Button variant="info" className="me-2" onClick={() => handleSchoolDetails(school.id)}>Details</Button>
+                                        <Button variant="warning" className="me-2" onClick={() => handleEditSchool(school.id)}>Edit</Button>
+                                        <Button variant="danger" onClick={() => handleDeleteSchool(school.id)}>Delete</Button>
+                                    </Card.Text>
+                                </Card.Body>
+                            </Card>
+                        </Col>
                     ))}
-                </div>
+                </Row>
             ) : (
                 <p>Loading schools...</p>
             )}
             <Outlet />
-        </div>
+        </Container>
     );
 };
 

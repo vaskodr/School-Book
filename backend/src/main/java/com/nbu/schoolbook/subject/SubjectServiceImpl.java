@@ -6,7 +6,9 @@ import com.nbu.schoolbook.subject.dto.CreateSubjectDTO;
 import com.nbu.schoolbook.subject.dto.SubjectDTO;
 import com.nbu.schoolbook.subject.dto.UpdateSubjectDTO;
 import com.nbu.schoolbook.user.teacher.TeacherEntity;
+import com.nbu.schoolbook.user.teacher.TeacherMapper;
 import com.nbu.schoolbook.user.teacher.TeacherRepository;
+import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class SubjectServiceImpl implements SubjectService {
     private final SubjectRepository subjectRepository;
     private final SubjectMapper subjectMapper;
     private final TeacherRepository teacherRepository;
+    private final TeacherMapper teacherMapper;
 
     @Override
     public void createSubject(CreateSubjectDTO createSubjectDTO) {
@@ -51,6 +54,14 @@ public class SubjectServiceImpl implements SubjectService {
          return subjects.stream()
                  .map(subjectMapper::mapEntityToDTO)
                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TeacherDTO> getTeachersBySubjectId(Long subjectId) {
+        List<TeacherEntity> teacherEntities = teacherRepository.findBySubjectsId(subjectId);
+        return teacherEntities.stream()
+                .map(teacherMapper::mapEntityToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

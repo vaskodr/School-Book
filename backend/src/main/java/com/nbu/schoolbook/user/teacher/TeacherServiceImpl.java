@@ -111,15 +111,16 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void updateTeacher(Long schoolId, Long teacherId, UpdateTeacherDTO updateTeacherDTO) {
-        TeacherEntity teacherEntity = teacherRepository.findById(teacherId)
+        TeacherEntity teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found"));
 
-        if (!teacherEntity.getSchool().getId().equals(schoolId)) {
-            throw new ResourceNotFoundException("Teacher not found in the specified school");
-        }
+        UserEntity userEntity = teacher.getUserEntity();
+        updateUserEntity(userEntity, updateTeacherDTO);
+        userRepository.save(userEntity);
 
-        updateUserEntity(teacherEntity.getUserEntity(), updateTeacherDTO);
-        userRepository.save(teacherEntity.getUserEntity());
+        Set<SubjectEntity> subjects = new HashSet<>(subjectRepository.findAllById(updateTeacherDTO.getSubjectIds()));
+        teacher.setSubjects(subjects);
+        teacherRepository.save(teacher);
     }
 
     @Override
@@ -153,6 +154,9 @@ public class TeacherServiceImpl implements TeacherService {
         teacherRepository.save(teacher);
     }
 
+    public List<TeacherDTO> getAvailableMentors(Long schoolId) {
+        return teacherMapper.toDTOs(teacherRepository.findAvailableMentors(schoolId));
+    }
 
     private SchoolEntity getSchoolEntity(Long schoolId) {
         return schoolRepository.findById(schoolId)
