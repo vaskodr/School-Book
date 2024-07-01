@@ -76,7 +76,6 @@ public class DirectorServiceImpl implements DirectorService {
 //                .map(directorMapper::mapToDTO)
 //                .collect(Collectors.toList());
 //    }
-
     @Override
     @Transactional
     public void updateDirector(Long schoolId, Long id, UpdateDirectorDTO updateDirectorDTO) {
@@ -94,7 +93,6 @@ public class DirectorServiceImpl implements DirectorService {
 
         directorRepository.save(directorEntity);
     }
-
 
     @Override
     @Transactional
@@ -129,18 +127,33 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     @Override
+    @Transactional
     public void unassignDirectorFromSchool(Long directorId, Long schoolId) {
         DirectorEntity director = directorRepository.findById(directorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Director not found"));
         SchoolEntity school = schoolRepository.findById(schoolId)
                 .orElseThrow(() -> new ResourceNotFoundException("School not found"));
 
-
+        // Unassign director from school
         school.setDirector(null);
         schoolRepository.save(school);
 
-        director.setSchool(null);
-        directorRepository.save(director);
+        // Delete the director entity from the directorRepository
+        directorRepository.delete(director);
+
+        // Remove the "DIRECTOR" role from the UserEntity
+        UserEntity user = director.getUserEntity();
+        RoleEntity directorRole = roleRepository.findByName("ROLE_DIRECTOR");
+
+        user.getRoles().remove(directorRole);
+
+        if (user.getRoles().isEmpty()) {
+            // If no roles left, delete the user
+            userRepository.delete(user);
+        } else {
+            // Otherwise, just save the updated user
+            userRepository.save(user);
+        }
     }
 
     private UserEntity getUser(RegisterDTO registerDTO, String roleName) {
@@ -174,14 +187,29 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     private void updateUserEntity(UserEntity userEntity, UpdateDirectorDTO updateDirectorDTO) {
-        if (updateDirectorDTO.getFirstName() != null) userEntity.setFirstName(updateDirectorDTO.getFirstName());
-        if (updateDirectorDTO.getLastName() != null) userEntity.setLastName(updateDirectorDTO.getLastName());
-        if (updateDirectorDTO.getDateOfBirth() != null) userEntity.setDateOfBirth(updateDirectorDTO.getDateOfBirth());
-        if (updateDirectorDTO.getGender() != null) userEntity.setGender(updateDirectorDTO.getGender());
-        if (updateDirectorDTO.getPhone() != null) userEntity.setPhone(updateDirectorDTO.getPhone());
-        if (updateDirectorDTO.getEmail() != null) userEntity.setEmail(updateDirectorDTO.getEmail());
-        if (updateDirectorDTO.getUsername() != null) userEntity.setUsername(updateDirectorDTO.getUsername());
-        if (updateDirectorDTO.getPassword() != null)
+        if (updateDirectorDTO.getFirstName() != null) {
+            userEntity.setFirstName(updateDirectorDTO.getFirstName());
+        }
+        if (updateDirectorDTO.getLastName() != null) {
+            userEntity.setLastName(updateDirectorDTO.getLastName());
+        }
+        if (updateDirectorDTO.getDateOfBirth() != null) {
+            userEntity.setDateOfBirth(updateDirectorDTO.getDateOfBirth());
+        }
+        if (updateDirectorDTO.getGender() != null) {
+            userEntity.setGender(updateDirectorDTO.getGender());
+        }
+        if (updateDirectorDTO.getPhone() != null) {
+            userEntity.setPhone(updateDirectorDTO.getPhone());
+        }
+        if (updateDirectorDTO.getEmail() != null) {
+            userEntity.setEmail(updateDirectorDTO.getEmail());
+        }
+        if (updateDirectorDTO.getUsername() != null) {
+            userEntity.setUsername(updateDirectorDTO.getUsername());
+        }
+        if (updateDirectorDTO.getPassword() != null) {
             userEntity.setPassword(passwordEncoder.encode(updateDirectorDTO.getPassword()));
+        }
     }
 }
