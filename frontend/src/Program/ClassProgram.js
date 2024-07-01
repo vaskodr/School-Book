@@ -71,6 +71,9 @@ const ClassProgram = () => {
         return new Date(1970, 0, 1, hours, minutes);
     };
 
+
+
+
     const handleDeleteSession = async (sessionId) => {
         try {
             const response = await fetch(`http://localhost:8080/api/class-sessions/${sessionId}`, {

@@ -123,7 +123,7 @@ const RegisterStudent = () => {
                                             <Form.Group controlId={field} className="mb-3">
                                                 <Form.Label>{field.charAt(0).toUpperCase() + field.slice(1)}</Form.Label>
                                                 <Form.Control
-                                                    type={field === 'dateOfBirth' ? 'date' : 'text'}
+                                                    type={field === 'dateOfBirth' ? 'date' : field === 'password' ? 'password' : 'text'}
                                                     name={field}
                                                     value={studentData[field]}
                                                     onChange={(e) => handleInputChange(e, setStudentData, studentData)}

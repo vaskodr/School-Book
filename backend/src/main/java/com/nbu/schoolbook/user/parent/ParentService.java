@@ -15,4 +15,5 @@ public interface ParentService {
     void deleteParent(Long id);
     public List<Long> getParents(Long studentId);
     List<StudentDTO> getParentChildrenByUserId(String userId);
+    void unassignParent(Long parentId, Long studentId);
 }

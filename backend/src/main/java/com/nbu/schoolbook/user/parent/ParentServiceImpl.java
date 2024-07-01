@@ -3,6 +3,10 @@ package com.nbu.schoolbook.user.parent;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.nbu.schoolbook.role.RoleEntity;
+import com.nbu.schoolbook.role.RoleRepository;
+import com.nbu.schoolbook.user.student.StudentEntity;
+import com.nbu.schoolbook.user.student.StudentRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,7 @@ import com.nbu.schoolbook.user.student.StudentMapper;
 import com.nbu.schoolbook.user.student.dto.StudentDTO;
 
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -29,6 +34,8 @@ public class ParentServiceImpl implements ParentService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final StudentMapper studentMapper;
+    private final StudentRepository studentRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public ParentDTO createParent(RegisterDTO registerDTO) {
@@ -114,5 +121,44 @@ public class ParentServiceImpl implements ParentService {
     public List<Long> getParents(Long studentId) {
 
         return null;
+    }
+
+    @Transactional
+    @Override
+    public void unassignParent(Long parentId, Long studentId) {
+        ParentEntity parent = parentRepository.findById(parentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+        // Unassign parent from student's parents set
+        student.getParents().remove(parent);
+        studentRepository.save(student);
+
+        // Remove the "PARENT" role from the UserEntity
+        UserEntity user = parent.getUserEntity();
+
+        RoleEntity parentRole = roleRepository.findByName("ROLE_PARENT");
+        parent.getStudents().remove(student);
+
+
+        if (parent.getStudents().isEmpty()) {
+            user.getRoles().remove(parentRole);
+        }
+
+
+        if (parent.getStudents().isEmpty()) {
+            parentRepository.delete(parent);
+        } else {
+            parentRepository.save(parent);
+        }
+
+        if (user.getRoles().isEmpty()) {
+            // If no roles left, delete the user
+            userRepository.delete(user);
+        } else {
+            // Otherwise, just save the updated user
+            userRepository.save(user);
+        }
     }
 }

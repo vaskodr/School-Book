@@ -3,10 +3,7 @@ package com.nbu.schoolbook.user.parent;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nbu.schoolbook.user.student.dto.StudentDTO;
 
@@ -23,4 +20,12 @@ public class ParentController {
         List<StudentDTO> studentDTOS = parentService.getParentChildrenByUserId(userId);
         return ResponseEntity.ok(studentDTOS);
     }
+
+    @PostMapping("/{parentId}/student/{studentId}")
+    public ResponseEntity<String> unassignParent(@PathVariable Long parentId,
+                                                 @PathVariable Long studentId) {
+        parentService.unassignParent(parentId, studentId);
+        return ResponseEntity.ok("Parent unassigned!");
+    }
+
 }
