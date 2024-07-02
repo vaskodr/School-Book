@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.user.teacher;
 
+import com.nbu.schoolbook.subject.dto.SubjectDTO;
 import com.nbu.schoolbook.user.dto.RegisterDTO;
 import com.nbu.schoolbook.user.teacher.dto.TeacherDTO;
 import com.nbu.schoolbook.user.teacher.dto.UpdateTeacherDTO;
@@ -62,6 +63,13 @@ public class TeacherController {
     public ResponseEntity<List<TeacherDTO>> getAvailableMentors(@PathVariable Long schoolId) {
         List<TeacherDTO> availableMentors = teacherService.getAvailableMentors(schoolId);
         return ResponseEntity.ok(availableMentors);
+    }
+
+    @GetMapping("/{teacherId}/subjects")
+    public ResponseEntity<List<SubjectDTO>> getTeacherSubjects(@PathVariable Long schoolId,
+                                                               @PathVariable Long teacherId) {
+        List<SubjectDTO> subjects = teacherService.findSubjectsBySchoolIdAndTeacherId(schoolId, teacherId);
+        return ResponseEntity.ok(subjects);
     }
 
 

@@ -53,7 +53,7 @@ class StudentAbsences extends Component {
               <tr key={absence.id}>
                 <td>{absence.description}</td>
                 <td>{new Date(absence.date).toLocaleDateString()}</td>
-                <td>{absence.classSessionId}</td>
+                <td>{absence.classSessionDTO.day}  {absence.classSessionDTO.subjectName}</td>
               </tr>
           ))}
           </tbody>

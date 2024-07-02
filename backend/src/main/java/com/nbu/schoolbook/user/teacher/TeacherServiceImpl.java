@@ -11,6 +11,7 @@ import com.nbu.schoolbook.subject.SubjectEntity;
 import com.nbu.schoolbook.subject.SubjectMapper;
 import com.nbu.schoolbook.subject.SubjectRepository;
 import com.nbu.schoolbook.subject.SubjectService;
+import com.nbu.schoolbook.subject.dto.SubjectDTO;
 import com.nbu.schoolbook.user.UserEntity;
 import com.nbu.schoolbook.user.UserMapper;
 import com.nbu.schoolbook.user.UserRepository;
@@ -45,6 +46,7 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherMapper teacherMapper;
     private final ClassRepository classRepository;
     private final SchoolRepository schoolRepository;
+    private final SubjectMapper subjectMapper;
     private static final Logger logger = LoggerFactory.getLogger(TeacherServiceImpl.class);
 
     @Override
@@ -177,8 +179,21 @@ public class TeacherServiceImpl implements TeacherService {
         teacherRepository.save(teacher);
     }
 
+    @Override
+    public List<SubjectDTO> findSubjectsBySchoolIdAndTeacherId(Long schoolId, Long teacherId) {
+        List<SubjectEntity> subjectEntities = teacherRepository.findSubjectsBySchoolIdAndTeacherId(schoolId, teacherId);
+        return subjectEntities.stream().map(subjectMapper::mapEntityToDTO).collect(Collectors.toList());
+    }
+
     public List<TeacherDTO> getAvailableMentors(Long schoolId) {
         return teacherMapper.toDTOs(teacherRepository.findAvailableMentors(schoolId));
+    }
+
+    @Override
+    public TeacherDTO getStudentByUserID(String userId) {
+        TeacherEntity teacher = teacherRepository.findByUserEntityId(userId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found!"));
+        return teacherMapper.mapEntityToDTO(teacher);
     }
 
     private SchoolEntity getSchoolEntity(Long schoolId) {
@@ -230,6 +245,7 @@ public class TeacherServiceImpl implements TeacherService {
             user.getRoles().add(role);
         } else {
             user = userMapper.mapRegisterDTOToEntity(registerDTO);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(new HashSet<>());
             user.getRoles().add(role);
         }

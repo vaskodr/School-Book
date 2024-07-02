@@ -14,4 +14,5 @@ public class GradeDTO {
     private LocalDate date;
     private Long studentId;
     private Long subjectId;
+    private String subjectName;
 }

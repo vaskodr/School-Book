@@ -26,6 +26,7 @@ public class TeacherDTO {
     private String email;
     private String username;
     private List<String> subjectNames;
+    private Long schoolId;
     private String schoolName;
     @Nullable
     private ClassDTO classDTO;

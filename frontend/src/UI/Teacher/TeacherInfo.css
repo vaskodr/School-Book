@@ -1,0 +1,12 @@
+/* TeacherInfo.css */
+
+.custom-card {
+    border-radius: 15px;
+}
+
+.custom-card-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}

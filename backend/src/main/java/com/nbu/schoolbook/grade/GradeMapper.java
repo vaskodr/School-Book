@@ -17,7 +17,14 @@ public class GradeMapper {
     private ModelMapper modelMapper;
 
     public GradeDTO mapToDTO(GradeEntity gradeEntity) {
-        return modelMapper.map(gradeEntity, GradeDTO.class);
+        GradeDTO gradeDTO = new GradeDTO();
+        gradeDTO.setId(gradeEntity.getId());
+        gradeDTO.setGrade(gradeEntity.getGrade());
+        gradeDTO.setDate(gradeEntity.getDate());
+        gradeDTO.setStudentId(gradeEntity.getStudent().getId());
+        gradeDTO.setSubjectId(gradeEntity.getSubject().getId());
+        gradeDTO.setSubjectName(gradeEntity.getSubject().getName());
+        return gradeDTO;
     }
 
     public GradeEntity mapToEntity(GradeDTO gradeDTO) {

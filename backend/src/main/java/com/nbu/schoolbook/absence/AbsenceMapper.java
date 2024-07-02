@@ -1,5 +1,6 @@
 package com.nbu.schoolbook.absence;
 
+import com.nbu.schoolbook.class_session.dto.ClassSessionDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,19 @@ public class AbsenceMapper {
     private ModelMapper modelMapper;
 
     public AbsenceDTO mapToDTO(AbsenceEntity absenceEntity) {
-        return modelMapper.map(absenceEntity, AbsenceDTO.class);
+        AbsenceDTO absenceDTO = new AbsenceDTO();
+        absenceDTO.setId(absenceEntity.getId());
+        absenceDTO.setDate(absenceEntity.getDate());
+        absenceDTO.setDescription(absenceEntity.getDescription());
+        absenceDTO.setStudentId(absenceEntity.getStudent().getId());
+        absenceDTO.setClassSessionId(absenceEntity.getClassSession().getId());
+        ClassSessionDTO classSessionDTO = new ClassSessionDTO();
+        classSessionDTO.setId(absenceEntity.getClassSession().getId());
+        classSessionDTO.setDay(absenceEntity.getClassSession().getDay());
+        classSessionDTO.setSubjectId(absenceEntity.getClassSession().getSubject().getId());
+        classSessionDTO.setSubjectName(absenceEntity.getClassSession().getSubject().getName());
+        absenceDTO.setClassSessionDTO(classSessionDTO);
+        return absenceDTO;
     }
 
     public AbsenceEntity mapToEntity(AbsenceDTO absenceDTO) {

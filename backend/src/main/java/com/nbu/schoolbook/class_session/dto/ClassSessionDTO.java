@@ -18,5 +18,6 @@ ClassSessionDTO {
     private String endTime;
     private Long teacherId;
     private Long subjectId;
+    private String subjectName;
     private Long programId;
 }

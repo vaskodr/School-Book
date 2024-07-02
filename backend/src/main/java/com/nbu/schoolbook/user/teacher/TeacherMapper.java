@@ -42,6 +42,8 @@ public class TeacherMapper {
                     .collect(Collectors.toList()));
         }
 
+        teacherDTO.setSchoolId(teacher.getSchool().getId());
+
         teacherDTO.setSchoolName(teacher.getSchool().getName());
         if (teacher.getMentoredClass() != null) {
             ClassEntity classEntity = classRepository.findById(teacher.getMentoredClass().getId())
